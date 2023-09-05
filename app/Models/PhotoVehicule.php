@@ -1,20 +1,19 @@
 <?php
 
 namespace App\Models;
-use App\Models\Devi;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class AcceptAction extends Model
+use App\Models\Vehicule;
+class PhotoVehicule extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'devi_id',
-        'prix',
-    ];
-    public function devi()
+            'url',
+        ];
+    public function vehicule()
     {
-        return $this->belongsTo(Devi::class);
+        
+        return $this->belongsTo(Vehicule::class);
     }
-
 }

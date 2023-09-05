@@ -10,6 +10,9 @@ use App\Http\Controllers\API\FileUploadController;
 use App\Http\Controllers\API\PasswordResetController; 
 use App\Http\Controllers\API\ConfigController; 
 use App\Http\Controllers\API\StatistiquesController; 
+use App\Http\Controllers\API\VehiculeController; 
+use App\Http\Controllers\API\TransporteurController;  
+use App\Http\Controllers\API\DeviController; 
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,8 +24,11 @@ use App\Http\Controllers\API\StatistiquesController;
 |
 */
 
-Route::post('login', [RegisterController::class, 'login']);
-Route::post('client/register', [ClientController::class, 'register']); 
+Route::post('client/login', [RegisterController::class, 'clientLogin']);
+Route::post('transporteur/login', [RegisterController::class, 'transporteurLogin']);
+
+Route::post('client/register', [RegisterController::class, 'clientRegister']); 
+Route::post('transporteur/register', [RegisterController::class, 'transporteurRegister']); 
 
  // Forgot Password
  Route::post('forgot-password',[PasswordResetController::class, 'forgotPassword']);
@@ -41,6 +47,20 @@ Route::middleware('auth:api')->group( function () {
     Route::post('logout', [RegisterController::class, 'logout']);
     Route::get('me', [UserController::class, 'me']);
 });
+Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR'])->group(function () {
+    Route::get('/vehicules', [VehiculeController::class, 'index']);
+    Route::post('/vehicules', [VehiculeController::class, 'store']);
+    Route::get('/vehicules/{id}', [VehiculeController::class, 'show']);
+    Route::put('/vehicules/{id}', [VehiculeController::class, 'update']);
+    Route::delete('/vehicules/{id}', [VehiculeController::class, 'destroy']);
+
+    Route::get('getTransporteurDetails', [TransporteurController::class, 'getTransporteurDetails']);
+    Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
+    //devi
+    Route::post('addDevi', [DeviController::class, 'addDevi']);
+    Route::put('devi/{deviId}', [DeviController::class, 'updateDevi']);
+    Route::post('accept-devi', [DeviController::class, 'acceptDevi']);
+});
 Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(function () {
     Route::get('offres/{statuts?}', [OffreController::class, 'index']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
@@ -49,8 +69,18 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
 });
+
+
+
 Route::prefix('/config')->group(function () {
+    Route::get('villes', [ConfigController::class, 'AllVilles']);
+    Route::get('villes/{ville}', [ConfigController::class, 'GetVille']);
+
     Route::get('categorie', [ConfigController::class, 'getCategorie']);
+
+    Route::get('vehicletypes', [ConfigController::class, 'VehicleType']);
 });
+
+ 
 
 

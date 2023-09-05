@@ -9,6 +9,13 @@ use App\Models\Offre;
 class Devi extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'date',
+        'prix',
+        'offre_id', 
+        'transporteur_id',
+        'status',
+    ];
     public function acceptAction()
     {
         return $this->hasOne(AcceptAction::class);
