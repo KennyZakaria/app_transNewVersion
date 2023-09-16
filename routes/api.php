@@ -30,6 +30,9 @@ Route::post('transporteur/login', [RegisterController::class, 'transporteurLogin
 Route::post('client/register', [RegisterController::class, 'clientRegister']); 
 Route::post('transporteur/register', [RegisterController::class, 'transporteurRegister']); 
 
+Route::get('emailExists', [RegisterController::class, 'emailExists']);
+Route::post('CheckMail', [UserController::class, 'CheckMail'] ); 
+
  // Forgot Password
  Route::post('forgot-password',[PasswordResetController::class, 'forgotPassword']);
  // Reset Password

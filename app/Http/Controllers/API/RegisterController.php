@@ -185,4 +185,5 @@ class RegisterController extends BaseController
         return response()->json(['message' => 'Transporteur created successfully', 'data' => $transporteur], 201);
     }
 
+
 }
