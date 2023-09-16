@@ -10,4 +10,9 @@ class OfferHelper {
             unset($offer['place_arrivee']); // Remove the old key
         }
     }
+    public static function modifyObjectProperties(&$offer)
+    { 
+        unset($offer->placeDepart);
+        unset($offer->placeArrivee);
+    }
 }

@@ -267,13 +267,17 @@ class OffreController extends BaseController
     }
     public function show($id)
     {
-        $Offer = Offre::with(['categorie','photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement'])->find($id);
-        if (!$Offer) {
+        $offer = Offre::with(['categorie','photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement'])->find($id);
+
+        if (!$offer) {
             return $this->sendError('Offer not found.', ['error' => 'Offer not found'], 404);
-            
-        }
-        return $this->sendResponse($Offer, 'offer found.');
-      
+        } 
+        $plcDe=Place::find($offer->placeDepart);
+        $plcAr=Place::find($offer->placeArrivee);
+        OfferHelper::modifyObjectProperties($offer);
+        $offer['placeDepart']=$plcDe;
+        $offer['placeArrivee']=$plcAr;
+        return $this->sendResponse($offer, 'offer found.');
     }
     public function destroy($id)
     {
