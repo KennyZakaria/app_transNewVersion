@@ -14,8 +14,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\Chargement;
+use App\Helpers\OfferHelper;
 class OffreController extends BaseController
 { 
+      
     public function index(Request $request)
     {
         $status = $request->input('status');
@@ -27,8 +29,8 @@ class OffreController extends BaseController
 
         $client = Auth::user();  
 
-        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction'])
-            ->where('client_id', $client->id);
+        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
+            
         if ($status) {
             $query->where('status', $status);
         }
@@ -66,23 +68,33 @@ class OffreController extends BaseController
         if ($categorie) {
             $query->where('categorie', $categorie);
         }
+        
+        $perPage = $request->input('per_page', 10);
+        $offres = $query->paginate($perPage); 
 
-        $perPage = $request->input('per_page', 10);  
-        $offres = $query->paginate($perPage);
-
-        return response()->json(['offers' => $offres]);
+         $offresArray = $offres->toArray();
+         OfferHelper::modifyKeysInOffers($offresArray);
+        return response()->json(['offers' => $offresArray]);
+        
     }
-
+    
     public function store(Request $request)
     {
         try {
             $validator = $this->validateRequest($request);
-
-            $placeDepart = $this->createPlace($request->input('placeDepart'));
+            $placeDepart=null;
+            $placeArrivee=null;
+            $categorie=null;
+            if ($request->has('placeDepart') ) {
+                $placeDepart = $this->createPlace($request->input('placeDepart'));
+            }
+            if ($request->has('placeArrivee') ) {
+                $placeArrivee = $this->createPlace($request->input('placeArrivee'));
+            }
             
-            $placeArrivee = $this->createPlace($request->input('placeArrivee'));
+            $categorie=$request->input('categorie');
             $clientId = auth()->id();
-            $offre = $this->createOffre($validator->validated(), $placeDepart, $placeArrivee,$clientId);
+            $offre = $this->createOffre($validator->validated(), $placeDepart, $placeArrivee,$clientId,$categorie);
             
             if ($request->has('photos') ) {
                 $this->handlePhotos($request->input('photos'), $offre); 
@@ -112,15 +124,18 @@ class OffreController extends BaseController
         $validator = Validator::make($request->all(), [
                 'dateDebut' => 'date',
                 'dateFin' => 'date',
-                'categorie' => 'integer|exists:categories,id',
+                'categorie.id' => 'integer|exists:categories,id',
                 'status' => 'in:EnAttenteDeValidation,Validé,Rejeté,Terminé',
                 'description' => 'string',
                 'prix' => 'numeric',
+                'photosUrls'=>'array',
+                'placeDepart.id' => 'integer',
                 'placeDepart.nomFr' => 'string',
                 'placeDepart.nomAr' => 'string',
                 'placeDepart.nomAn' => 'string',
                 'placeDepart.latitude' => 'numeric',
                 'placeDepart.longitude' => 'numeric',
+                'placeArrivee.id' => 'integer',
                 'placeArrivee.nomFr' => 'string',
                 'placeArrivee.nomAr' => 'string',
                 'placeArrivee.nomAn' => 'string',
@@ -156,13 +171,30 @@ class OffreController extends BaseController
 
     protected function createPlace(array $placeData)
     {
-        return Place::create($placeData);
+        $id = $placeData['id'];
+        $existingPlace = Place::find($id);
+
+        if ($existingPlace) { 
+            return $existingPlace;
+        } else { 
+            $place = Place::create($placeData); // Create the Place
+            $place->id = $id; // Set the id attribute
+            return $place; // Return the updated Place object
+        }
     }
 
-    protected function createOffre(array $data, Place $placeDepart, Place $placeArrivee,$clientId)
+    protected function createOffre(array $data, Place $placeDepart, Place $placeArrivee, $clientId, $categorie)
     {
+        
         $offre = new Offre();
+       
         $offre->fill($data); 
+        
+        if (isset($data['photosUrls']) && is_array($data['photosUrls'])) {
+           
+            $data['photosUrls'] = implode(';', $data['photosUrls']); 
+        }
+        $offre->categorie = $categorie['id'];
         $offre->placeDepart()->associate($placeDepart);
         $offre->placeArrivee()->associate($placeArrivee); 
         $offre->client_id = $clientId;
@@ -242,6 +274,20 @@ class OffreController extends BaseController
         }
         return $this->sendResponse($Offer, 'offer found.');
       
+    }
+    public function destroy($id)
+    {
+        try {
+            $offre = Offre::find($id);
+            if (!$offre) {
+                return $this->sendError('Offer not found.', ['error' => 'Offer not found'], 404);
+                
+            }
+            $offre->delete();
+            return response()->json(['message' => 'Offer  deleted successfully']);
+        } catch (ModelNotFoundException $e) { 
+            return $this->sendError('Offer not found.', ['error' => 'Offer not found'], 404);
+        }
     }
     
 }

@@ -10,10 +10,11 @@ use App\Models\Place;
 use App\Models\Article;
 use App\Models\Photo;
 use App\Models\Devi;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Offre extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $fillable = [
         'dateDebut',
         'dateFin',
@@ -23,7 +24,9 @@ class Offre extends Model
         'prix',
         'placeDepart', // Field for placeDepart
         'placeArrivee', // Field for placeArrivee
+        'photosUrls',
     ];
+    
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
@@ -57,6 +60,15 @@ class Offre extends Model
     public function devis(): HasMany
     {
         return $this->hasMany(Devi::class);
+    }
+    public function getPhotosUrlsAttribute($value)
+    {
+        return explode(';', $value);
+    }
+ 
+    public function setPhotosUrlsAttribute($value)
+    {
+        $this->attributes['photosUrls'] = implode(';', $value);
     }
 
 }
