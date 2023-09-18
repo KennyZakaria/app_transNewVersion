@@ -15,7 +15,7 @@ class FileUploadController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'file' => 'required|file|mimes:jpeg,png,pdf|max:2048',
-            'folder' => 'required|in:FolderPhVehicule,FolderPhCin,FolderPhPieceJoindre',
+            'folder' => 'required|in:FolderPhVehicule,FolderPhCin,FolderPhPieceJoindre,FolderOffres',
         ]);
 
         if ($validator->fails()) {
@@ -42,7 +42,7 @@ class FileUploadController extends BaseController
 
     public function download($folder, $filename)
     {
-        if (!in_array($folder, ['FolderPhVehicule', 'FolderPhCin', 'FolderPhPieceJoindre'])) {
+        if (!in_array($folder, ['FolderPhVehicule', 'FolderPhCin', 'FolderPhPieceJoindre', 'FolderOffres'])) {
             return response()->json(['error' => 'Invalid folder name'], 400);
         }
 
@@ -61,7 +61,7 @@ class FileUploadController extends BaseController
     }
     public function remove($folder, $filename)
     {
-        if (!in_array($folder, ['FolderPhVehicule', 'FolderPhCin', 'FolderPhPieceJoindre'])) {
+        if (!in_array($folder, ['FolderPhVehicule', 'FolderPhCin', 'FolderPhPieceJoindre', 'FolderOffres'])) {
             return $this->sendError('Invalid folder name', [], 400);
         }
 
