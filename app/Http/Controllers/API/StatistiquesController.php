@@ -25,7 +25,7 @@ class StatistiquesController extends Controller
 
     $totalBilling = AcceptAction::whereHas('devi.offre', fn ($query) => $query->where('client_id', $user_id))->sum('prix');
 
-    $statuses = ['EnAttenteDeValidation', 'Validé', 'Terminé', 'Rejeté'];
+    $statuses = ['EnAttenteDeValidation', 'Valide', 'Termine', 'Rejete'];
     $result = array_fill_keys($statuses, 0);
 
     foreach ($statuses as $status) {

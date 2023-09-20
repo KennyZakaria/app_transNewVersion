@@ -141,7 +141,7 @@ class DeviController    extends BaseController
             'date' => Carbon::now(),
             'observations'=>$request->input('observations')
         ]);
-
+        Offre::where('id', $offreId)->update(['status' => 'Termine']);
         return response()->json(['message' => 'Devis updated successfully']);
     }
     public function getDevi(Request $request, $status) {
