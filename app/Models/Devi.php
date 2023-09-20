@@ -35,5 +35,15 @@ class Devi extends Model
     {
         return $this->belongsTo(Transporteur::class,"transporteur_id");
     }
+    public function transporteurNomPrenom()
+    { 
+        //dd($this->transporteur);
+        if ($this->transporteur) {
+            //print("2");
+            return $this->transporteur->user->firstName;
+        }
+
+        return null;  
+    }
      
 }
