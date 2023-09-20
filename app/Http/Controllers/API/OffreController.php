@@ -20,7 +20,7 @@ class OffreController extends BaseController
       
     public function index(Request $request)
     {
-        $status = $request->input('status');
+         
         $dateDebut = $request->input('dateDebut');
         $dateFin = $request->input('dateFin');
         $placeDepart = $request->input('placeDepart');
@@ -30,10 +30,7 @@ class OffreController extends BaseController
         $client = Auth::user();  
 
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
-            
-        if ($status) {
-            $query->where('status', $status);
-        }
+        
 
         if ($dateDebut) {
             $query->where('dateDebut', '>=', $dateDebut);
@@ -68,6 +65,64 @@ class OffreController extends BaseController
         if ($categorie) {
             $query->where('categorie', $categorie);
         }
+      
+        $perPage = $request->input('per_page', 10);
+        $offres = $query->paginate($perPage); 
+
+         $offresArray = $offres->toArray();
+         OfferHelper::modifyKeysInOffers($offresArray);
+        return response()->json(['offers' => $offresArray]);
+        
+    }
+    public function offresByStatus(Request $request)
+    { 
+        $status = $request->input('status');
+        $dateDebut = $request->input('dateDebut');
+        $dateFin = $request->input('dateFin');
+        $placeDepart = $request->input('placeDepart');
+        $placeArrivee = $request->input('placeArrivee');
+        $categorie = $request->input('categorie');
+
+        $client = Auth::user();  
+
+        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
+            
+        
+        if ($dateDebut) {
+            $query->where('dateDebut', '>=', $dateDebut);
+        }
+        
+        if ($dateFin) {
+            $query->where('dateFin', '<=', $dateFin);
+        }
+        
+        if ($placeDepart) {
+            $query->where(function ($query) use ($placeDepart) {
+                $query->where('placeDepart', 'like', '%' . $placeDepart . '%')
+                    ->orWhereHas('placeDepart', function ($subquery) use ($placeDepart) {
+                        $subquery->where('nomFr', 'like', '%' . $placeDepart . '%')
+                            ->orWhere('nomAr', 'like', '%' . $placeDepart . '%')
+                            ->orWhere('nomAn', 'like', '%' . $placeDepart . '%');
+                    });
+            });
+        }
+
+        if ($placeArrivee) {
+            $query->where(function ($query) use ($placeArrivee) {
+                $query->where('placeArrivee', 'like', '%' . $placeArrivee . '%')
+                    ->orWhereHas('placeArrivee', function ($subquery) use ($placeArrivee) {
+                        $subquery->where('nomFr', 'like', '%' . $placeArrivee . '%')
+                            ->orWhere('nomAr', 'like', '%' . $placeArrivee . '%')
+                            ->orWhere('nomAn', 'like', '%' . $placeArrivee . '%');
+                    });
+            });
+        }
+        if ($status) { 
+            $query->where('status', $status);
+        }
+        if ($categorie) {
+            $query->where('categorie', $categorie);
+        }
         
         $perPage = $request->input('per_page', 10);
         $offres = $query->paginate($perPage); 
@@ -77,7 +132,6 @@ class OffreController extends BaseController
         return response()->json(['offers' => $offresArray]);
         
     }
-    
     public function store(Request $request)
     {
         try {

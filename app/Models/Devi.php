@@ -15,6 +15,11 @@ class Devi extends Model
         'offre_id', 
         'transporteur_id',
         'status',
+        'typeVehicule',
+        'dateDebut',
+        'dateFin',
+        'description',
+        'flexibleDate'
     ];
     public function acceptAction()
     {

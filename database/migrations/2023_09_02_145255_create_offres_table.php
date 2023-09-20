@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreign('placeArrivee')->references('id')->on('places');
             $table->unsignedBigInteger('categorie');
             $table->foreign('categorie')->references('id')->on('categories');
-            $table->enum('status', ['EnAttenteDeValidation', 'Validé', 'Rejeté','Terminé'])->default('EnAttenteDeValidation');
+            $table->enum('status', ['EnAttenteDeValidation', 'Valide', 'Rejete','Termine'])->default('EnAttenteDeValidation');
             $table->text('description')->nullable();  
             $table->decimal('prix', 10, 2)->nullable();
             $table->timestamps();

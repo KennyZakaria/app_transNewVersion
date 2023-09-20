@@ -13,6 +13,7 @@ use App\Http\Controllers\API\StatistiquesController;
 use App\Http\Controllers\API\VehiculeController; 
 use App\Http\Controllers\API\TransporteurController;  
 use App\Http\Controllers\API\DeviController; 
+use App\Http\Controllers\API\OfferTransporteurController;  
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -59,18 +60,28 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
 
     Route::get('getTransporteurDetails', [TransporteurController::class, 'getTransporteurDetails']);
     Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
+    //devi  
+    Route::post('devis', [DeviController::class, 'addDevi']);
+    Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);
+    
+    
+    //offre 
+    Route::get('offres', [OfferTransporteurController::class, 'index']);
+    Route::get('offres/{id}', [OfferTransporteurController::class, 'show']);
     //devi
-    Route::post('addDevi', [DeviController::class, 'addDevi']);
-    Route::put('devi/{deviId}', [DeviController::class, 'updateDevi']);
-    Route::post('accept-devi', [DeviController::class, 'acceptDevi']);
+    Route::get('devisByStatus/{status}', [DeviController::class, 'getDevi']);
 });
 Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(function () {
-    Route::get('offres/{statuts?}', [OffreController::class, 'index']);
+    Route::get('offres', [OffreController::class, 'index']);
+    Route::get('offresByStatus/{status?}', [OffreController::class, 'offresByStatus']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
     Route::post('offres', [OffreController::class, 'store']); 
     Route::delete('offers/{id}', [OffreController::class, 'destroy']);
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
+    //accept-devi
+    Route::post('accept-devi', [DeviController::class, 'acceptDevi']);
+    //
 });
 
 

@@ -11,6 +11,8 @@ class AcceptAction extends Model
     protected $fillable = [
         'devi_id',
         'prix',
+        'date',
+        'observations',
     ];
     public function devi()
     {

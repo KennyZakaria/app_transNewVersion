@@ -20,7 +20,7 @@ class Transporteur extends User
         'VehicleURUS',
         'user_id',
         'ville_id',
-        'pieceJoindreByType',
+        'piecejoindre',
     ];
     public function categories()
     {

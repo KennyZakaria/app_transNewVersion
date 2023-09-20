@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->dateTime('date')->nullable();
             $table->decimal('prix', 10, 2)->nullable();
-            $table->enum('status', ['EnCours', 'Accepté', 'Annulé'])->default('EnCours');
+            $table->enum('status', ['EnCours', 'Accepte', 'Annule'])->default('EnCours');
             $table->unsignedBigInteger('offre_id');
             $table->foreign('offre_id')->references('id')->on('offres')->onDelete('cascade');
             $table->timestamps();
