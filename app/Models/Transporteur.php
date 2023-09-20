@@ -21,6 +21,7 @@ class Transporteur extends User
         'user_id',
         'ville_id',
         'piecejoindre',
+        
     ];
     public function categories()
     {
