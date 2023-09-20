@@ -85,7 +85,7 @@ class OffreController extends BaseController
 
         $client = Auth::user();  
 
-        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
+        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction','devis.transporteur.user']);
             
         
         if ($dateDebut) {
