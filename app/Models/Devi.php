@@ -36,14 +36,18 @@ class Devi extends Model
         return $this->belongsTo(Transporteur::class,"transporteur_id");
     }
     public function transporteurNomPrenom()
-    { 
-        //dd($this->transporteur);
-        if ($this->transporteur) {
-            //print("2");
-            return $this->transporteur->user->firstName;
-        }
+    {
+        $result = $this->belongsTo(Transporteur::class, "transporteur_id")
+        ->join('users', 'users.id', '=', 'transporteurs.user_id')
+        ->select(['users.firstName', 'users.lastName'])
+        ->first(); // Use first() to retrieve the result
 
-        return null;  
+    if ($result) {
+        return $result->firstName . ' ' . $result->lastName;
+    } else {
+        return 'Data not available'; // or return null; depending on your preference
+    }
+        
     }
      
 }

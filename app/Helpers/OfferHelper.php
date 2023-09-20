@@ -12,8 +12,7 @@ class OfferHelper {
     }
     public static function modifyKeysInOffersAndExist(&$offersArray,$transporteurId) {
         foreach ($offersArray['data'] as &$offer) {
-            $offer['placeDepart'] = $offer['place_depart'];
-
+            $offer['placeDepart'] = $offer['place_depart']; 
             $devi = Devi::where('offre_id', $offer['id'])
             ->where('transporteur_id',  $transporteurId)->first();
             if ($devi) {
