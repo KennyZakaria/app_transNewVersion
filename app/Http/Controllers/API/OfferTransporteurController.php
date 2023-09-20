@@ -13,7 +13,7 @@ class OfferTransporteurController extends BaseController
 {
     public function index(Request $request)
     { 
-        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
+        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction','devis.transporteur']);
         
         $query->where('status', 'valide');
          

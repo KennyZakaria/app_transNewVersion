@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Offre;
+use App\Models\Transporteur;
 
 class Devi extends Model
 {
@@ -28,6 +29,11 @@ class Devi extends Model
     public function offre()
     {
         return $this->belongsTo(Offre::class);
+    }
+   
+    public function transporteur()
+    {
+        return $this->belongsTo(Transporteur::class,"transporteur_id");
     }
      
 }
