@@ -73,15 +73,16 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
 });
 Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(function () {
     Route::get('offres', [OffreController::class, 'index']);
-    Route::get('offresByStatus/{status?}', [OffreController::class, 'offresByStatus']);
+    Route::get('offresByStatus/{status}', [OffreController::class, 'offresByStatus']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
     Route::post('offres', [OffreController::class, 'store']); 
     Route::delete('offers/{id}', [OffreController::class, 'destroy']);
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
     //accept-devi
-    Route::post('accept-devi', [DeviController::class, 'acceptDevi']);
-    //
+    Route::post('devis/accept', [DeviController::class, 'acceptDevi']);
+    //get devi 
+    Route::get('devis/{status}',[DeviController::class, 'getDevisClientByStatus']);
 });
 
 

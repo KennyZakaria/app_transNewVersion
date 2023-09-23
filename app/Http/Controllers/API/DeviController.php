@@ -142,7 +142,8 @@ class DeviController    extends BaseController
             'observations'=>$request->input('observations')
         ]);
         Offre::where('id', $offreId)->update(['status' => 'Termine']);
-        return response()->json(['message' => 'Devis updated successfully']);
+        return $this->sendResponse('Devis Accepted successfully.', 'Devis Accepted successfully.');
+       // return response()->json(['message' => 'Devis updated successfully']);
     }
     public function getDevi(Request $request, $status) {
         $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
@@ -186,5 +187,32 @@ class DeviController    extends BaseController
     
         return response()->json(['message' => 'list Devis retrieved successfully', 'data' => $listdevis], 200);
     }
+    public function getDevisClientByStatus(Request $request, $status) 
+    {
+        $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
+        ->whereHas('offre', function ($query) {
+            $query->where('client_id', Auth::id());
+        })
+        ->where('status', $status);
+        
+        $devis = $devis->get(); 
+        $listdevis = $devis->map(function ($devi) {
+            $plcDe = Place::find($devi->offre->placeDepart);
+            $plcAr = Place::find($devi->offre->placeArrivee);
+            $transporteurId = auth()->user()->id; 
+            unset($devi->offre->placeDepart);
+            unset($devi->offre->placeArrivee);
+            $devi->offre->placeDepart = $plcDe;
+            $devi->offre->placeArrivee = $plcAr;
+            return $devi;
+        });
+    
+        return response()->json(['message' => 'list Devis retrieved successfully', 'data' => $listdevis], 200);
+        
+        
+        
+    }
+
+
         
 }

@@ -39,6 +39,18 @@ class Transporteur extends User
     {
         return $this->hasMany(Vehicule::class, 'transporteur_id');
     }
+    public function getLastNameAttribute()
+    {
+        $lastName = DB::table('users')->where('id', $this->id)->value('lastName');
+        return $lastName; 
+            
+    }
+    public function getFirstNameAttribute()
+    {
+        $firstName = DB::table('users')->where('id', $this->id)->value('firstName');
+        return $firstName;
+    }
+    protected $appends = ['firstName','lastName'];
     /*
     public function propositions()
     {

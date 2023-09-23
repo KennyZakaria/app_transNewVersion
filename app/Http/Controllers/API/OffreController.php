@@ -65,7 +65,7 @@ class OffreController extends BaseController
         if ($categorie) {
             $query->where('categorie', $categorie);
         }
-      
+        $query->where('client_id',$client->id );
         $perPage = $request->input('per_page', 10);
         $offres = $query->paginate($perPage); 
 
@@ -74,9 +74,9 @@ class OffreController extends BaseController
         return response()->json(['offers' => $offresArray]);
         
     }
-    public function offresByStatus(Request $request)
+    public function offresByStatus(Request $request,$status)
     { 
-        $status = $request->input('status');
+        //$status = $request->input('status');
         $dateDebut = $request->input('dateDebut');
         $dateFin = $request->input('dateFin');
         $placeDepart = $request->input('placeDepart');
@@ -87,8 +87,8 @@ class OffreController extends BaseController
 
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 
         'placeArrivee', 'articles.dimension', 'chargement',
-        'devis.acceptAction','devis.transporteur.user:id,firstName,lastName']);
-            
+        'devis.acceptAction','devis.transporteur:id,status']);
+            //.user:id,firstName,lastName
         
         if ($dateDebut) {
             $query->where('dateDebut', '>=', $dateDebut);
@@ -119,12 +119,14 @@ class OffreController extends BaseController
                     });
             });
         }
-        if ($status) { 
+        if ($status) {  
+            
             $query->where('status', $status);
         }
         if ($categorie) {
             $query->where('categorie', $categorie);
         }
+        $query->where('client_id',$client->id );
         
         $perPage = $request->input('per_page', 10);
         $offres = $query->paginate($perPage); 
