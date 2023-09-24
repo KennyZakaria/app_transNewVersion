@@ -165,8 +165,8 @@ class DeviController    extends BaseController
         }
         $devis = $devis->get();
         $listdevis = $devis->map(function ($devi) {
-            $plcDe = Place::find($devi->offre->placeDepart)->first();
-            $plcAr = Place::find($devi->offre->placeArrivee)->first();
+            $plcDe = Place::where('id', $devi->offre->placeDepart)->first();
+            $plcAr = Place::where('id', $devi->offre->placeArrivee)->first();
             $transporteurId = auth()->user()->id;
             $existingDevi = Devi::where('offre_id', $devi->offre->id)
                 ->where('transporteur_id', $transporteurId)
@@ -199,8 +199,8 @@ class DeviController    extends BaseController
         //$devis = $devis->get();
 
         $listdevis = $devis->map(function ($devi) {
-                $plcDe = Place::find($devi->offre->placeDepart)->first();
-                $plcAr = Place::find($devi->offre->placeArrivee)->first();
+            $plcDe = Place::where('id', $devi->offre->placeDepart)->first();
+            $plcAr = Place::where('id', $devi->offre->placeArrivee)->first();
 
             //$plcDe = Place::find($devi->offre->placeDepart);
            // $plcAr = Place::find($devi->offre->placeArrivee);
@@ -227,12 +227,9 @@ class DeviController    extends BaseController
 
             $plcDe = Place::where('id', $devis->offre->placeDepart)->first();
             $plcAr = Place::where('id', $devis->offre->placeArrivee)->first();
-
-
             unset($devis->offre->placeDepart);
             $devis->offre->placeDepart = $plcDe;
             unset($devis->offre->placeArrivee);
-
             $devis->offre->placeArrivee = $plcAr;
 
             return $this->sendResponse($devis, 'Devis found.');
