@@ -7,13 +7,13 @@ use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\OffreController;
 use App\Http\Controllers\API\FileUploadController;
-use App\Http\Controllers\API\PasswordResetController; 
-use App\Http\Controllers\API\ConfigController; 
-use App\Http\Controllers\API\StatistiquesController; 
-use App\Http\Controllers\API\VehiculeController; 
-use App\Http\Controllers\API\TransporteurController;  
-use App\Http\Controllers\API\DeviController; 
-use App\Http\Controllers\API\OfferTransporteurController;  
+use App\Http\Controllers\API\PasswordResetController;
+use App\Http\Controllers\API\ConfigController;
+use App\Http\Controllers\API\StatistiquesController;
+use App\Http\Controllers\API\VehiculeController;
+use App\Http\Controllers\API\TransporteurController;
+use App\Http\Controllers\API\DeviController;
+use App\Http\Controllers\API\OfferTransporteurController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,23 +28,23 @@ use App\Http\Controllers\API\OfferTransporteurController;
 Route::post('client/login', [RegisterController::class, 'clientLogin']);
 Route::post('transporteur/login', [RegisterController::class, 'transporteurLogin']);
 
-Route::post('client/register', [RegisterController::class, 'clientRegister']); 
-Route::post('transporteur/register', [RegisterController::class, 'transporteurRegister']); 
+Route::post('client/register', [RegisterController::class, 'clientRegister']);
+Route::post('transporteur/register', [RegisterController::class, 'transporteurRegister']);
 
 Route::get('emailExists', [RegisterController::class, 'emailExists']);
-Route::post('CheckMail', [UserController::class, 'CheckMail'] ); 
+Route::post('CheckMail', [UserController::class, 'CheckMail'] );
 
  // Forgot Password
  Route::post('forgot-password',[PasswordResetController::class, 'forgotPassword']);
  // Reset Password
- Route::post('reset-password', [PasswordResetController::class, 'resetPassword'] ); 
+ Route::post('reset-password', [PasswordResetController::class, 'resetPassword'] );
  // Reset Password
  Route::post('check-otp', [PasswordResetController::class, 'checkOtp'] );
  //sendOtpCheckMail
- Route::post('sendOtpCheckMail', [UserController::class, 'sendOtpCheckMail'] );   
+ Route::post('sendOtpCheckMail', [UserController::class, 'sendOtpCheckMail'] );
 
-Route::post('upload', [FileUploadController::class, 'upload']); 
-Route::get('download/{folder}/{filename}', [FileUploadController::class, 'download'])->name('download'); 
+Route::post('upload', [FileUploadController::class, 'upload']);
+Route::get('download/{folder}/{filename}', [FileUploadController::class, 'download'])->name('download');
 Route::delete('remove/{folder}/{filename}', [FileUploadController::class, 'remove']);
 
 Route::middleware('auth:api')->group( function () {
@@ -60,12 +60,12 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
 
     Route::get('getTransporteurDetails', [TransporteurController::class, 'getTransporteurDetails']);
     Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
-    //devi  
+    //devi
     Route::post('devis', [DeviController::class, 'addDevi']);
     Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);
-    
-    
-    //offre 
+
+
+    //offre
     Route::get('offres', [OfferTransporteurController::class, 'index']);
     Route::get('offres/{id}', [OfferTransporteurController::class, 'show']);
     //devi
@@ -75,14 +75,15 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     Route::get('offres', [OffreController::class, 'index']);
     Route::get('offresByStatus/{status}', [OffreController::class, 'offresByStatus']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
-    Route::post('offres', [OffreController::class, 'store']); 
+    Route::post('offres', [OffreController::class, 'store']);
     Route::delete('offers/{id}', [OffreController::class, 'destroy']);
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
     //accept-devi
     Route::post('devis/accept', [DeviController::class, 'acceptDevi']);
-    //get devi 
-    Route::get('devis/{status}',[DeviController::class, 'getDevisClientByStatus']);
+    //get devi
+    Route::get('devisByStatus/{status}',[DeviController::class, 'getDevisClientByStatus']);
+    Route::get('devis/{id}', [DeviController::class, 'getDevisClientById']);
 });
 
 
@@ -96,6 +97,6 @@ Route::prefix('/config')->group(function () {
     Route::get('vehicletypes', [ConfigController::class, 'VehicleType']);
 });
 
- 
+
 
 

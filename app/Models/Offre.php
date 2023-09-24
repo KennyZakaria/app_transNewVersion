@@ -26,25 +26,25 @@ class Offre extends Model
         'placeArrivee', // Field for placeArrivee
         'photosUrls',
     ];
-    
+
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
     }
     public function categorie()
     {
-        return $this->belongsTo(Categorie::class, 'categorie');  
+        return $this->belongsTo(Categorie::class, 'categorie');
     }
 
     public function placeDepart()
     {
-        return $this->belongsTo(Place::class, 'placeDepart'); 
+        return $this->belongsTo(Place::class, 'placeDepart');
     }
     public function placeArrivee()
     {
-        return $this->belongsTo(Place::class, 'placeArrivee'); 
+        return $this->belongsTo(Place::class, 'placeArrivee');
     }
-      
+
     public function articles(): HasMany
     {
         return $this->hasMany(Article::class);
@@ -65,7 +65,7 @@ class Offre extends Model
     {
         return explode(';', $value);
     }
- 
+
     public function setPhotosUrlsAttribute($value)
     {
         $this->attributes['photosUrls'] = implode(';', $value);
