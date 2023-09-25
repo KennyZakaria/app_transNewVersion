@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('nomAr')->nullable();
             $table->string('nomAn')->nullable();
             $table->string('icon')->nullable();
+            $table->string('imageSrc')->nullable();
             $table->timestamps();
         });
     }
