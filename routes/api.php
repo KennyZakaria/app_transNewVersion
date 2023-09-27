@@ -14,6 +14,9 @@ use App\Http\Controllers\API\VehiculeController;
 use App\Http\Controllers\API\TransporteurController;
 use App\Http\Controllers\API\DeviController;
 use App\Http\Controllers\API\OfferTransporteurController;
+use App\Http\Controllers\ContactController;
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,6 +27,8 @@ use App\Http\Controllers\API\OfferTransporteurController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('contacts', [ContactController::class, 'store']);
+Route::get('offres', [OffreController::class, 'indexPublic']);
 
 Route::post('client/login', [RegisterController::class, 'clientLogin']);
 Route::post('transporteur/login', [RegisterController::class, 'transporteurLogin']);

@@ -19,7 +19,62 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OffreController extends BaseController
 {
+    public function indexPublic(Request $request)
+    {
 
+        $dateDebut = $request->input('dateDebut');
+        $dateFin = $request->input('dateFin');
+        $placeDepart = $request->input('placeDepart');
+        $placeArrivee = $request->input('placeArrivee');
+        $categorie = $request->input('categorie');
+
+
+
+        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
+
+
+        if ($dateDebut) {
+            $query->where('dateDebut', '>=', $dateDebut);
+        }
+
+        if ($dateFin) {
+            $query->where('dateFin', '<=', $dateFin);
+        }
+
+        if ($placeDepart) {
+            $query->where(function ($query) use ($placeDepart) {
+                $query->where('placeDepart', 'like', '%' . $placeDepart . '%')
+                    ->orWhereHas('placeDepart', function ($subquery) use ($placeDepart) {
+                        $subquery->where('nomFr', 'like', '%' . $placeDepart . '%')
+                            ->orWhere('nomAr', 'like', '%' . $placeDepart . '%')
+                            ->orWhere('nomAn', 'like', '%' . $placeDepart . '%');
+                    });
+            });
+        }
+
+        if ($placeArrivee) {
+            $query->where(function ($query) use ($placeArrivee) {
+                $query->where('placeArrivee', 'like', '%' . $placeArrivee . '%')
+                    ->orWhereHas('placeArrivee', function ($subquery) use ($placeArrivee) {
+                        $subquery->where('nomFr', 'like', '%' . $placeArrivee . '%')
+                            ->orWhere('nomAr', 'like', '%' . $placeArrivee . '%')
+                            ->orWhere('nomAn', 'like', '%' . $placeArrivee . '%');
+                    });
+            });
+        }
+
+        if ($categorie) {
+            $query->where('categorie', $categorie);
+        }
+
+        $perPage = $request->input('per_page', 10);
+        $offres = $query->paginate($perPage);
+
+         $offresArray = $offres->toArray();
+         OfferHelper::modifyKeysInOffers($offresArray);
+        return response()->json(['offers' => $offresArray]);
+
+    }
     public function index(Request $request)
     {
 
@@ -182,8 +237,8 @@ class OffreController extends BaseController
     protected function validateRequest(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                'dateDebut' => 'date',
-                'dateFin' => 'date',
+                'dateDebut' => 'nullable|date',
+                'dateFin' => 'nullable|date',
                 'categorie.id' => 'integer|exists:categories,id',
                 'status' => 'in:EnAttenteDeValidation,Validé,Rejeté,Terminé',
                 'description' => 'string',
