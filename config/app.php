@@ -15,7 +15,7 @@ return [
     | any other location as required by the application or its packages.
     |
     */
-
+    'recipient_email' => env('RECIPIENT_EMAIL', 'abdellah.zarouala@gmail.com'),
     'name' => env('APP_NAME', 'Laravel'),
 
     /*

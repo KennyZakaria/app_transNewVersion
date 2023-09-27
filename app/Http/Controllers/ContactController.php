@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Http\Controllers\API\BaseController as BaseController;
+use App\Mail\ContactSaved;
+use Illuminate\Support\Facades\Mail;
+
 class ContactController extends BaseController
 {
     public function store(Request $request)
@@ -20,6 +23,8 @@ class ContactController extends BaseController
         ]);
 
         $contact = new Contact($validatedData);
+        $recipientEmail = config('app.recipient_email');
+        Mail::to($recipientEmail)->send(new ContactSaved($contact));
         $contact->save();
         return $this->sendResponse('Contact enregistré avec succès', $contact);
     }
