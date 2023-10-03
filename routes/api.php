@@ -27,7 +27,7 @@ use App\Http\Controllers\ContactController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::post('contacts', [ContactController::class, 'store']);
+Route::post('contact', [ContactController::class, 'store']);
 Route::get('offres', [OffreController::class, 'indexPublic']);
 
 Route::post('client/login', [RegisterController::class, 'clientLogin']);
@@ -89,6 +89,10 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     //get devi
     Route::get('devisByStatus/{status}',[DeviController::class, 'getDevisClientByStatus']);
     Route::get('devis/{id}', [DeviController::class, 'getDevisClientById']);
+
+    //modification informations client
+    Route::put('account', [ClientController::class, 'update']);
+    Route::post('change-password', [ClientController::class, 'resetPassword']);
 });
 
 
