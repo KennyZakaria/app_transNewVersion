@@ -8,9 +8,8 @@ use App\Models\User;
 class Client extends User
 {
     protected $fillable = [
-        'id', 
-        'user_id',
-        'tel',
+        'id',
+        'user_id'
     ];
     use HasFactory;
 }

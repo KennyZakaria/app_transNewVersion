@@ -66,7 +66,7 @@ class OffreController extends BaseController
         if ($categorie) {
             $query->where('categorie', $categorie);
         }
-
+        $query->where('status', '=', "Valide");
         $perPage = $request->input('per_page', 10);
         $offres = $query->paginate($perPage);
 

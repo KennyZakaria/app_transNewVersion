@@ -64,7 +64,9 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
     Route::delete('/vehicules/{id}', [VehiculeController::class, 'destroy']);
 
     Route::get('getTransporteurDetails', [TransporteurController::class, 'getTransporteurDetails']);
-    Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
+    //Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
+    Route::put('account', [ClientController::class, 'update']);
+    Route::post('change-password', [ClientController::class, 'resetPassword']);
     //devi
     Route::post('devis', [DeviController::class, 'addDevi']);
     Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);

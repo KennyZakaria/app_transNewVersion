@@ -35,7 +35,8 @@ class ClientController  extends BaseController
 
             $dataToUpdate = [
                 'firstName' => $request->input('firstName'),
-                'lastName' => $request->input('lastName')
+                'lastName' => $request->input('lastName'),
+                'tel' => $request->input('tel'),
             ];
 
             if ($user->email !== $request->input('email')) {
@@ -45,11 +46,7 @@ class ClientController  extends BaseController
             }
 
             $user->update($dataToUpdate);
-            $transporteur = Client::where('user_id', $user_id)->first();
-            Client::where('user_id', $user_id)->update([
-                'tel' => $request->input('tel')
 
-            ]);
 
             DB::commit();
             $client = Client::where('user_id', $user_id)->first();
