@@ -238,8 +238,15 @@ class DeviController    extends BaseController
         }
 
     }
+    public function getDevisByOffreId($id){
+        $devis = Devi::where('offre_id', $id)
+    ->where('transporteur_id', Auth::id())
+    ->first();
 
+      /* if ($devis->isEmpty()) {
+            return $this->sendError( NULL, ' NOT found.');
+        }*/
+        return $this->sendResponse($devis, '  found.');
 
-
-
+    }
 }

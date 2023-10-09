@@ -15,7 +15,7 @@ use App\Http\Controllers\API\TransporteurController;
 use App\Http\Controllers\API\DeviController;
 use App\Http\Controllers\API\OfferTransporteurController;
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\API\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +55,9 @@ Route::delete('remove/{folder}/{filename}', [FileUploadController::class, 'remov
 Route::middleware('auth:api')->group( function () {
     Route::post('logout', [RegisterController::class, 'logout']);
     Route::get('me', [UserController::class, 'me']);
+    Route::get('users/{id}', [UserController::class, 'getUserById']);
+    Route::post('messages', [ChatController::class, 'createMessage']);
+    Route::get('messages', [ChatController::class, 'MessageByDevis']);
 });
 Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR'])->group(function () {
     Route::get('/vehicules', [VehiculeController::class, 'index']);
@@ -71,12 +74,15 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
     Route::post('devis', [DeviController::class, 'addDevi']);
     Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);
 
+    Route::get('devisByOffreId/{id}', [DeviController::class, 'getDevisByOffreId']);
 
     //offre
     Route::get('offres', [OfferTransporteurController::class, 'index']);
     Route::get('offres/{id}', [OfferTransporteurController::class, 'show']);
     //devi
     Route::get('devisByStatus/{status}', [DeviController::class, 'getDevi']);
+    //if exist devis in offer bu id
+
 });
 Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(function () {
     Route::get('offres', [OffreController::class, 'index']);

@@ -19,6 +19,15 @@ class UserController  extends BaseController
         $this->middleware('auth');
         $this->middleware('role:ROLE_ADMIN');
     }*/
+
+    public function getUserById($id): JsonResponse
+    {
+        $user = User::select('firstName', 'lastName')->find($id);
+        if (!$user) {
+            return $this->sendError('User not found.');
+        }
+        return $this->sendResponse( $user, 'User found.');
+    }
     public function me(Request $request): JsonResponse
     {
        // Retrieve the authenticated user with their roles
