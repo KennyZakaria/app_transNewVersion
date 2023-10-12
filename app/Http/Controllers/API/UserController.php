@@ -84,8 +84,7 @@ class UserController  extends BaseController
             return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
         }
         DB::table('users')->updateOrInsert([
-                                'email' => $request->email,
-                                'email' => $request->email,
+                                'email' => $request->email
                             ], [
                                 'remember_token' =>'',
                                 'email_verified_at' =>now(),

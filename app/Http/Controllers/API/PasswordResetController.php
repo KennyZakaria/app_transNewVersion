@@ -14,8 +14,8 @@ class PasswordResetController  extends BaseController
 {
     public function forgotPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [ 
-            'email' => 'required|email', 
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
@@ -30,16 +30,12 @@ class PasswordResetController  extends BaseController
             return $this->sendError('User not found.', ['error' => 'User not found'], 404);
         }
 
-        // Generate OTP
         $otp = rand(100000, 999999);
 
-        // Save the OTP and its expiration time (e.g., 5 minutes) in the database
-        DB::table('password_reset_tokens')->updateOrInsert([
+        DB::table('users')->updateOrInsert([
             'email' => $user->email,
         ], [
-            'email' => $user->email,
-            'token' => $otp,
-            'created_at' => now(),
+            'remember_token' => $otp
         ]);
 
         $mailData = [
@@ -56,12 +52,12 @@ class PasswordResetController  extends BaseController
             // Do not provide specific error messages, only indicate that the email sending failed
             return $this->sendError('', 'The system is unable to send emails. Please try again later.', 400);
         }
-    } 
+    }
     public function resetPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [ 
-            'email' => 'required|email', 
-            'otp' => 'required', 
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'otp' => 'required',
             'password' => 'required|min:8', // Enforce a minimum password length
             'c_password' => 'required|same:password',
         ]);
@@ -75,124 +71,54 @@ class PasswordResetController  extends BaseController
             return $this->sendError('User not found.', ['error' => 'User not found'], 404);
         }
 
-        $passwordReset = DB::table('password_reset_tokens')
+        $passwordReset = DB::table('users')
             ->where('email', $request->email)
             ->first();
-            
+
             if (!$passwordReset) {
                 return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
             }else {
-                if ($passwordReset->token != $request->otp) {
-                    // Increment the attempts count
-                    DB::table('password_reset_tokens')
-                        ->where('email', $passwordReset->email)
-                        ->increment('attempts');
-                        $attempts = $passwordReset->attempts ?? 0;
-                        if ($attempts >= 5) {
-                            DB::table('password_reset_tokens')->where('email', $user->email)->delete();
-                            
-                            try {
-                                $newOtp = rand(100000, 999999);
-                                $mailData = [
-                                    'otp' => $newOtp
-                                ];
-                                // Send the new OTP email
-                                Mail::to($request->email)->send(new OtpMail($mailData));
-                                DB::table('password_reset_tokens')->updateOrInsert([
-                                    'email' => $request->email,
-                                ], [
-                                    'email' => $request->email,
-                                    'token' => $newOtp,
-                                    'created_at' => now(),
-                                ]);
-                                // Do not provide specific error messages, only indicate that the email was sent successfully
-                                return $this->sendError('Invalid OTP. Too many attempts. A new OTP has been sent to your email. Please check your mailbox.', [], 200);
-                            } catch (\Exception $e) {
-                                // Do not provide specific error messages, only indicate that the email sending failed
-                                return $this->sendError('', 'The system is unable to send emails. Please try again later.', 400);
-                            }
-                            
-                        }
-                        return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
-                    
+                if ($passwordReset->remember_token != $request->otp) {
+                    return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
+
                 }else{
-                    $expirationTime = now()->subMinutes(5);
-                    if ($passwordReset->created_at < $expirationTime) {
-                        DB::table('password_reset_tokens')->where('email', $user->email)->delete();
-                        return $this->sendError('Invalid OTP. The OTP has expired.', ['error' => 'OTP has expired'], 404); 
-                    }
                     $user->update([
                         'password' => bcrypt($request->password),
                     ]);
-                
-                    // Delete the used OTP from the database
-                    DB::table('password_reset_tokens')->where('email', $request->email)->delete();
                     return $this->sendResponse('', 'Your password has been successfully modified.', 200);
-                }   
-            }     
+                }
+            }
     }
     public function checkOtp(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'otp' => 'required',
+            'otp' => 'required|min:6',
         ]);
 
-        if ($validator->fails()) {
+        if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());
         }
-    
-        $passwordReset = DB::table('password_reset_tokens')
-            ->where('email', $request->email)
-            ->first();
-            
-        if (!$passwordReset) {
-            return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
-        } else {
-            if ($passwordReset->token != $request->otp) {
-                // Increment the attempts count
-                DB::table('password_reset_tokens')
-                    ->where('email', $passwordReset->email)
-                    ->increment('attempts');
-                $attempts = $passwordReset->attempts ?? 0;
-                if ($attempts >= 5) {
-                    DB::table('password_reset_tokens')->where('email', $passwordReset->email)->delete();
-
-                    try {
-                        $newOtp = rand(100000, 999999);
-                        $mailData = [
-                            'otp' => $newOtp
-                        ];
-                        // Send the new OTP email
-                        Mail::to($request->email)->send(new OtpMail($mailData));
-                        DB::table('password_reset_tokens')->updateOrInsert([
-                            'email' => $request->email,
-                        ], [
-                            'email' => $request->email,
-                            'token' => $newOtp,
-                            'created_at' => now(),
-                        ]);
-                        // Do not provide specific error messages, only indicate that the email was sent successfully
-                        return $this->sendError('Invalid OTP. Too many attempts. A new OTP has been sent to your email. Please check your mailbox.', [], 200);
-                    } catch (\Exception $e) {
-                        // Do not provide specific error messages, only indicate that the email sending failed
-                        return $this->sendError('The system is unable to send emails. Please try again later.', 400);
-                    }
-                }
-                return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
-            } else {
-                $expirationTime = now()->subMinutes(5);
-                if ($passwordReset->created_at < $expirationTime) {
-                    DB::table('password_reset_tokens')->where('email', $passwordReset->email)->delete();
-                    return $this->sendError('Invalid OTP. The OTP has expired.', ['error' => 'OTP has expired'], 404);
-                }
-                return $this->sendResponse('', 'Valid OTP.', 200);
-            }
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return $this->sendError('not found.', ['error' => 'User not found']);
         }
-    }  
-} 
+        $user = User::where('remember_token', $request->otp)->first();
+        if (!$user) {
+            return $this->sendError('Invalid OTP. Please check the code and try again.', ['error' => 'Invalid OTP'], 404);
+        }
+        DB::table('users')->updateOrInsert([
+                                'email' => $request->email
+                            ], [
+                                'email_verified_at' =>now(),
+                                'verifiedEmail' =>true,
+                            ]);
+         return $this->sendResponse('', ' the email has been successfully checked ', 200);
+
+
+    }
+}
 
 
 
 
- 

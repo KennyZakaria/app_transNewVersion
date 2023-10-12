@@ -59,7 +59,12 @@ class DeviController    extends BaseController
 
         return $this->sendResponse($devisCreated, 'Devi added successfully.');
     }
-
+    public function getDevisById(Request $request, $deviId){
+        $devi = Devi::where('id', $deviId)->with('offre')
+        ->where('transporteur_id', $request->user()->id)
+        ->first();
+        return $this->sendResponse($devi, 'devis found');
+    }
     public function updateDevi(Request $request, $deviId)
     {
         try {

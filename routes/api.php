@@ -73,6 +73,8 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
     //devi
     Route::post('devis', [DeviController::class, 'addDevi']);
     Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);
+    Route::get('devis/{deviId}', [DeviController::class, 'getDevisById']);
+
 
     Route::get('devisByOffreId/{id}', [DeviController::class, 'getDevisByOffreId']);
 
