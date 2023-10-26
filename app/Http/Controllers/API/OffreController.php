@@ -89,21 +89,22 @@ class OffreController extends BaseController
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
 
 
-        if ($dateDebut) {
-            $query->where('dateDebut', '>=', $dateDebut);
-        }
-
-        if ($dateFin) {
-            $query->where('dateFin', '<=', $dateFin);
+        if ($request->has('dateDebut') && $request->has('dateFin')) {
+            $query->whereBetween('dateFin', [$request->input('dateDebut'), $request->input('dateFin')]);
+        } elseif ($request->has('dateDebut')) {
+            $query->where('dateDebut', '>=', $request->input('dateDebut'));
+        } elseif ($request->has('dateFin')) {
+            $query->where('dateFin', '<=', $request->input('dateFin'));
         }
 
         if ($placeDepart) {
-            $query->where(function ($query) use ($placeDepart) {
+
+           $query->where(function ($query) use ($placeDepart) {
                 $query->where('placeDepart', 'like', '%' . $placeDepart . '%')
                     ->orWhereHas('placeDepart', function ($subquery) use ($placeDepart) {
-                        $subquery->where('nomFr', 'like', '%' . $placeDepart . '%')
-                            ->orWhere('nomAr', 'like', '%' . $placeDepart . '%')
-                            ->orWhere('nomAn', 'like', '%' . $placeDepart . '%');
+                        $subquery->where('nomFr', 'like', '%' . $placeDepart . '%');
+                            /*->orWhere('nomAr', 'like', '%' . $placeDepart . '%')
+                            ->orWhere('nomAn', 'like', '%' . $placeDepart . '%');*/
                     });
             });
         }
@@ -124,7 +125,7 @@ class OffreController extends BaseController
         }
         $query->where('client_id',$client->id );
         $perPage = $request->input('per_page', 10);
-        $offres = $query->paginate($perPage);
+        $offres = $query->orderBy('created_at', 'desc')->paginate($perPage);
 
          $offresArray = $offres->toArray();
          OfferHelper::modifyKeysInOffers($offresArray);
@@ -176,9 +177,13 @@ class OffreController extends BaseController
                     });
             });
         }
+ 
         if ($status) {
-
-            $query->where('status', $status);
+            if ($status == "Delete") { 
+                $query->withTrashed()->where('deleted_at', '!=', null);
+            } else {
+                $query->where('status', $status);
+            }
         }
         if ($categorie) {
             $query->where('categorie', $categorie);

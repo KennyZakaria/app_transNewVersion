@@ -27,15 +27,16 @@ class StatistiquesController extends Controller
 
     $statuses = ['EnAttenteDeValidation', 'Valide', 'Termine', 'Rejete'];
     $result = array_fill_keys($statuses, 0);
-
+    $totalOffer=0;
     foreach ($statuses as $status) {
         if (array_key_exists($status, $statusCounts)) {
             $result[$status] = $statusCounts[$status];
+            $totalOffer+=$statusCounts[$status];
         }
     }
     $result['nombreQuotes'] = $totalDevisCount;
     $result['biling'] = $totalBilling;
-
+    $result['total'] =$totalOffer;
     return response()->json($result);
 }
     
