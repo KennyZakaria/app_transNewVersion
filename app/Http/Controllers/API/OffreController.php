@@ -78,23 +78,25 @@ class OffreController extends BaseController
     public function index(Request $request)
     {
 
-        $dateDebut = $request->input('dateDebut');
-        $dateFin = $request->input('dateFin');
-        $placeDepart = $request->input('placeDepart');
-        $placeArrivee = $request->input('placeArrivee');
-        $categorie = $request->input('categorie');
+        $dateDebut = $request->header('dateDebut');  
+        $dateFin = $request->header('dateFin');
+        $placeDepart = $request->header('placeDepart');
+        $placeArrivee = $request->header('placeArrivee');
+        $categorie = $request->header('categorie');
 
         $client = Auth::user();
 
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction']);
 
 
-        if ($request->has('dateDebut') && $request->has('dateFin')) {
-            $query->whereBetween('dateFin', [$request->input('dateDebut'), $request->input('dateFin')]);
-        } elseif ($request->has('dateDebut')) {
-            $query->where('dateDebut', '>=', $request->input('dateDebut'));
-        } elseif ($request->has('dateFin')) {
-            $query->where('dateFin', '<=', $request->input('dateFin'));
+        if ($request->header('dateDebut') && $request->header('dateFin')){
+            $query->whereBetween('dateDebut',  [$dateDebut, $dateFin])
+                  ->whereBetween('dateFin',  [$dateDebut,$dateFin]);
+           // $query->whereBetween('dateFin', [$request->input('dateDebut'), $request->input('dateFin')]);
+        } elseif ($request->header('dateDebut') ) {
+            $query->where('dateDebut', '>=', $dateDebut);
+        } elseif ($request->header('dateFin')) {
+            $query->where('dateFin', '<=', $dateFin);
         }
 
         if ($placeDepart) {
