@@ -291,8 +291,8 @@ class OffreController extends BaseController
 
     protected function createPlace(array $placeData)
     {
-        $id = $placeData['id'];
-        $existingPlace = Place::find($id);
+        $placeId = $placeData['placeId'];
+        $existingPlace = $existingPlace = Place::findByPlaceId($placeId);
 
         if ($existingPlace) {
             return $existingPlace;
