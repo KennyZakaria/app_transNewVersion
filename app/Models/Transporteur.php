@@ -21,7 +21,8 @@ class Transporteur extends User
         'user_id',
         'ville_id',
         'piecejoindre',
-        
+        'approuver',
+
     ];
     public function categories()
     {
@@ -42,8 +43,8 @@ class Transporteur extends User
     public function getLastNameAttribute()
     {
         $lastName = DB::table('users')->where('id', $this->id)->value('lastName');
-        return $lastName; 
-            
+        return $lastName;
+
     }
     public function getFirstNameAttribute()
     {
@@ -51,12 +52,16 @@ class Transporteur extends User
         return $firstName;
     }
     protected $appends = ['firstName','lastName'];
+    public function devis()
+    {
+        return $this->hasMany(Devi::class, 'transporteur_id');
+    }
     /*
     public function propositions()
     {
         return $this->hasMany(PropositionPrix::class, 'transporteur_id');
     }*/
-     
-    
-    
+
+
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Devi;
@@ -54,9 +55,9 @@ class DeviController    extends BaseController
             'flexibleDate' => $request->input('flexibleDate'),
             'typeVehicule' => $request->input('typeVehicule'),
         ];
-
         $devisCreated=Devi::create($newDeviData);
-
+        $offerCom = Offre::find($offre["id"]);
+        NotificationHelper::insertNotification($offerCom["client_id"],"nouveauDevis",$devisCreated->id);
         return $this->sendResponse($devisCreated, 'Devi added successfully.');
     }
     public function getDevisById(Request $request, $deviId){
@@ -136,6 +137,7 @@ class DeviController    extends BaseController
         $acceptAction = AcceptAction::where('devi_id', $deviId)->first();
         $offreId = $devis->offre_id;
         Devi::where('offre_id', $offreId)->update(['status' => 'Annule']);
+        NotificationHelper::insertNotification($devis->transporteur_id,"devisAccepteParClient",$devis->id);
         $devis->update(['status' => 'Accepte']);
         if($acceptAction){
             return response()->json(['message' => 'Une AcceptAction existe déjà pour cette offre'], 404);

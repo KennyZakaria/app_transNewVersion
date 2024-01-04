@@ -13,7 +13,7 @@ class Devi extends Model
     protected $fillable = [
         'date',
         'prix',
-        'offre_id', 
+        'offre_id',
         'transporteur_id',
         'status',
         'typeVehicule',
@@ -30,11 +30,11 @@ class Devi extends Model
     {
         return $this->belongsTo(Offre::class);
     }
-   
+
     public function transporteur()
     {
         return $this->belongsTo(Transporteur::class,"transporteur_id");
     }
-   
-     
+
+
 }

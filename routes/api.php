@@ -16,6 +16,7 @@ use App\Http\Controllers\API\DeviController;
 use App\Http\Controllers\API\OfferTransporteurController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\API\ChatController;
+use App\Http\Controllers\API\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,7 @@ Route::middleware('auth:api')->group( function () {
     Route::get('users/{id}', [UserController::class, 'getUserById']);
     Route::post('messages', [ChatController::class, 'createMessage']);
     Route::get('messages', [ChatController::class, 'MessageByDevis']);
+    Route::get('notifications', [NotificationController::class, 'notification']);
 });
 Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR'])->group(function () {
     Route::get('/vehicules', [VehiculeController::class, 'index']);
