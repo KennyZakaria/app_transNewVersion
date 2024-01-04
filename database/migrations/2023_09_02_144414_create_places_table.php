@@ -12,10 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('places', function (Blueprint $table) {
-            $table->unsignedBigInteger('id', false)->primary();
+            $table->id();
             $table->string('nomFr')->nullable();
             $table->string('nomAr')->nullable();
-            $table->string('nomAn')->nullable();   
+            $table->string('nomAn')->nullable();
+            $table->string('placeId')->nullable();    
             $table->decimal('latitude')->nullable();
             $table->decimal('longitude')->nullable();
             $table->timestamps();
