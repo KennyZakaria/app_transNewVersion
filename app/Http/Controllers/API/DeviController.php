@@ -199,8 +199,37 @@ class DeviController    extends BaseController
         $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
         ->whereHas('offre', function ($query) {
             $query->where('client_id', Auth::id());
-        })
-        ->where('status', $status);
+        });
+        if($status != ""){
+            $devis = $devis->where('status', $status);
+        }
+        $perPage = $request->input('per_page', 10);
+        $devis = $devis->paginate($perPage);
+        //$devis = $devis->get();
+
+        $listdevis = $devis->map(function ($devi) {
+            $plcDe = Place::where('id', $devi->offre->placeDepart)->first();
+            $plcAr = Place::where('id', $devi->offre->placeArrivee)->first();
+
+            //$plcDe = Place::find($devi->offre->placeDepart);
+           // $plcAr = Place::find($devi->offre->placeArrivee);
+            unset($devi->offre->placeDepart);
+            unset($devi->offre->placeArrivee);
+            $devi->offre->placeDepart = $plcDe;
+            $devi->offre->placeArrivee = $plcAr;
+            return $devi;
+        });
+
+        return response()->json(['message' => 'list Devis retrieved successfully', 'devis' => $devis], 200);
+    }
+
+    public function getDevisByConnectedClient(Request $request)
+    {
+        $devis = Devi::with('offre')
+        ->whereHas('offre', function ($query) {
+            $query->where('client_id', Auth::id());
+        });
+
         $perPage = $request->input('per_page', 10);
         $devis = $devis->paginate($perPage);
         //$devis = $devis->get();
@@ -256,4 +285,19 @@ class DeviController    extends BaseController
         return $this->sendResponse($devis, '  found.');
 
     }
+
+
+    public function getDevisByOffreId2(Request $request, $id)
+    {
+        $devis = Devi::with('transporteur.user');
+        if($id != -1){
+            $devis = $devis->where('offre_id', $id);
+        }
+        
+        $perPage = $request->input('per_page', 10);
+        $devis = $devis->paginate($perPage);
+        return response()->json(['message' => 'list Devis retrieved successfully', 'devis' => $devis], 200);
+    }
+
+
 }

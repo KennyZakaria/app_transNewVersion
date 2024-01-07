@@ -183,7 +183,7 @@ class OffreController extends BaseController
         if ($status) {
             if ($status == "Delete") { 
                 $query->withTrashed()->where('deleted_at', '!=', null);
-            } else {
+            } else if ($status != "") {
                 $query->where('status', $status);
             }
         }
@@ -208,9 +208,13 @@ class OffreController extends BaseController
             $placeArrivee=null;
             $categorie=null;
             if ($request->has('placeDepart') ) {
-                $placeDepart = $this->createPlace($request->input('placeDepart'));
+                $placeData = $request->input('placeDepart');
+                $placeData['id'] = 1;
+                $placeDepart = $this->createPlace($placeData);
             }
             if ($request->has('placeArrivee') ) {
+                $placeData = $request->input('placeArrivee');
+                $placeData['id'] = 2;
                 $placeArrivee = $this->createPlace($request->input('placeArrivee'));
             }
 
@@ -300,7 +304,7 @@ class OffreController extends BaseController
             return $existingPlace;
         } else {
             $place = Place::create($placeData); // Create the Place
-            $place->id = $id; // Set the id attribute
+            $place->placeId = $placeId; // Set the id attribute
             return $place; // Return the updated Place object
         }
     }

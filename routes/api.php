@@ -100,7 +100,10 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     Route::post('devis/accept', [DeviController::class, 'acceptDevi']);
     //get devi
     Route::get('devisByStatus/{status}',[DeviController::class, 'getDevisClientByStatus']);
+    Route::get('devisByConnectedClient',[DeviController::class, 'getDevisByConnectedClient']);
+    
     Route::get('devis/{id}', [DeviController::class, 'getDevisClientById']);
+    Route::get('devisByOffreId/{id}', [DeviController::class, 'getDevisByOffreId2']);
 
     //modification informations client
     Route::put('account', [ClientController::class, 'update']);
