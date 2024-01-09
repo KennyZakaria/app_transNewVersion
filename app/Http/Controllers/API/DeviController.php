@@ -225,7 +225,7 @@ class DeviController    extends BaseController
 
     public function getDevisByConnectedClient(Request $request)
     {
-        $devis = Devi::with('offre')
+        $devis = Devi::with('offre','transporteur')
         ->whereHas('offre', function ($query) {
             $query->where('client_id', Auth::id());
         });
