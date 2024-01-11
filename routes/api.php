@@ -93,6 +93,7 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     Route::get('offresByStatus/{status}', [OffreController::class, 'offresByStatus']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
     Route::post('offres', [OffreController::class, 'store']);
+    Route::post('offres/{id}/close', [OffreController::class, 'close']);
     Route::delete('offres/{id}', [OffreController::class, 'destroy']);
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
