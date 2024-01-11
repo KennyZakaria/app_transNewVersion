@@ -14,6 +14,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\API\BaseController as BaseController;
 use App\Http\Controllers\API\Log;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class DeviController    extends BaseController
 {
     public function addDevi(Request $request)
@@ -152,6 +154,30 @@ class DeviController    extends BaseController
         return $this->sendResponse('Devis Accepted successfully.', 'Devis Accepted successfully.');
        // return response()->json(['message' => 'Devis updated successfully']);
     }
+
+    public function rejeterDevi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'devis.id' => 'required|exists:devis,id'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+        $deviId = $request->input('devis.id');
+        $devis = Devi::with('offre')->find($deviId);
+
+        if (!$devis) {
+            return response()->json(['message' => 'Devis not found'], 404);
+        }
+        if ($devis->offre->client->id !== auth()->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        NotificationHelper::insertNotification($devis->transporteur_id,"devisRejeteParClient",$devis->id);
+        $devis->update(['status' => 'Annule']);
+        return $this->sendResponse('Devis rejected successfully.', 'Devis rejected successfully.');
+       // return response()->json(['message' => 'Devis updated successfully']);
+    }
+
     public function getDevi(Request $request, $status) {
         $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
             ->where('transporteur_id', Auth::id())
@@ -293,11 +319,26 @@ class DeviController    extends BaseController
         if($id != -1){
             $devis = $devis->where('offre_id', $id);
         }
-        
+
         $perPage = $request->input('per_page', 10);
         $devis = $devis->paginate($perPage);
         return response()->json(['message' => 'list Devis retrieved successfully', 'devis' => $devis], 200);
     }
+    public function deleteDevis($deviId)
+    {
+        try {
+            $devi = Devi::find($deviId);
+            if (!$devi) {
+                return $this->sendError('Offer not found.', ['error' => 'Devi not found'], 404);
+
+            }
+            $devi->delete();
+            return response()->json(['message' => 'devi deleted successfully']);
+        } catch (ModelNotFoundException $e) {
+            return $this->sendError('devi not found.', ['error' => 'devi not found'], 404);
+        }
+    }
+
 
 
 }

@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Offre;
 use App\Models\Transporteur;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Devi extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     protected $fillable = [
         'date',
         'prix',

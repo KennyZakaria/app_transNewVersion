@@ -26,7 +26,7 @@ class NotificationHelper
                 $plcAr = Place::find($offer->placeArrivee);
                 $categorie = Categorie::find($offer->categorie);
                 $categoryName = optional($categorie)->nomFr;
-                $contentNotification = "Le demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été acceptée";
+                $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été acceptée et est maintenant publiée sur notre site.";
 
                 $subject = "Le demande a été acceptée.";
                 break;
@@ -37,7 +37,7 @@ class NotificationHelper
                 $plcAr = Place::find($offer->placeArrivee);
                 $categorie = Categorie::find($offer->categorie);
                 $categoryName = optional($categorie)->nomFr;
-                $contentNotification = "Le demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été rejetée. ";
+                $contentNotification = "La demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été rejetée. ";
 
                 $subject = "Le demande a été rejetée.";
                 break;
