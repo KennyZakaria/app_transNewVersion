@@ -289,7 +289,10 @@ class DeviController    extends BaseController
 
     public function getDevisByOffreId2(Request $request, $id)
     {
-        $devis = Devi::with('transporteur.user');
+        $devis = Devi::with('transporteur.user')
+        ->whereHas('offre', function ($query) {
+            $query->where('client_id', Auth::id());
+        });
         if($id != -1){
             $devis = $devis->where('offre_id', $id);
         }
