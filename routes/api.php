@@ -60,6 +60,7 @@ Route::middleware('auth:api')->group( function () {
     Route::post('messages', [ChatController::class, 'createMessage']);
     Route::get('messages', [ChatController::class, 'MessageByDevis']);
     Route::get('notifications', [NotificationController::class, 'notification']);
+    Route::post('notifications/{id}/delete', [NotificationController::class, 'readNotification']);
 });
 Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR'])->group(function () {
     Route::get('/vehicules', [VehiculeController::class, 'index']);
@@ -76,6 +77,7 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
     Route::post('devis', [DeviController::class, 'addDevi']);
     Route::put('devis/{deviId}', [DeviController::class, 'updateDevi']);
     Route::get('devis/{deviId}', [DeviController::class, 'getDevisById']);
+    Route::delete('devis/{deviId}', [DeviController::class, 'deleteDevis']);
 
 
     Route::get('devisByOffreId/{id}', [DeviController::class, 'getDevisByOffreId']);
@@ -93,15 +95,18 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     Route::get('offresByStatus/{status}', [OffreController::class, 'offresByStatus']);
     Route::get('offre/{id}', [OffreController::class, 'show']);
     Route::post('offres', [OffreController::class, 'store']);
+    Route::post('offres/{id}/close', [OffreController::class, 'close']);
     Route::delete('offres/{id}', [OffreController::class, 'destroy']);
     //statistiques
     Route::get('statistiques', [StatistiquesController::class, 'statistiques']);
     //accept-devi
     Route::post('devis/accept', [DeviController::class, 'acceptDevi']);
+
+    Route::post('devis/rejeter', [DeviController::class, 'rejeterDevi']);
     //get devi
     Route::get('devisByStatus/{status}',[DeviController::class, 'getDevisClientByStatus']);
     Route::get('devisByConnectedClient',[DeviController::class, 'getDevisByConnectedClient']);
-    
+
     Route::get('devis/{id}', [DeviController::class, 'getDevisClientById']);
     Route::get('devisByOffreId/{id}', [DeviController::class, 'getDevisByOffreId2']);
 

@@ -200,6 +200,9 @@ class OffreController extends BaseController
         return response()->json(['offers' => $offresArray]);
 
     }
+
+
+
     public function store(Request $request)
     {
         try {
@@ -415,6 +418,15 @@ class OffreController extends BaseController
             return response()->json(['message' => 'Offer  deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Offer not found.', ['error' => 'Offer not found'], 404);
+        }
+    }
+
+    public function close($id) {
+        try {
+            Offre::where('id', $id)->update(['status' => 'Termine']);
+            return response()->json(['message' => 'Statut mis à jour avec succès'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Erreur lors de la mise à jour du statut'], 500);
         }
     }
 

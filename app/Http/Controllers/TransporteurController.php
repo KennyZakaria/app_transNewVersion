@@ -73,4 +73,9 @@ class TransporteurController extends Controller
         $transporteur->save();
         return redirect()->back()->with('success', 'Le statut d\'approbation a été modifié avec succès.');
     }
+    public function detials($id)
+    {
+        $transporteur=Transporteur::with("user")->find($id);
+        return view('transporteurs.detail', ['transporteur' => $transporteur]);
+    }
 }

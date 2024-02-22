@@ -53,6 +53,7 @@
                             <td><span>Devi</span></td>
                             <td>Approuver</td>
                             <td><span>Statut actuel </span></td>
+                            <td><span>Details</span></td>
                             <td><span>Opérations</span></td>
                         </tr>
                     </thead>
@@ -79,7 +80,12 @@
                                         </span>
                                     </div>
                                 </td>
+                                <td>
+                                    <a href="{{ route('transporteur.details', ['id' => $transporteur->id]) }}">
+                                        <i class="fa fa-info-circle" aria-hidden="true"></i>
 
+                                    </a>
+                                </td>
                                 <td>
                                     <div class="dropdown">
                                         <button class="btn-action btn-secondary" type="button" id="dropdownAction"

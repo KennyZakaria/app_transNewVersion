@@ -14,8 +14,19 @@ class NotificationController extends BaseController
     {
         $user_id = auth()->id();
         $perPage = $request->input('per_page', 10);
-        $notifications = Notification::where('user_id', $user_id)->paginate($perPage);
+        $notifications = Notification::where('user_id', $user_id)->where('statusRead', false)
+            ->orderBy('dateCreation', 'desc')
+            ->paginate($perPage);
         return response()->json($notifications, 200);
     }
-
+    public function readNotification($id)
+    {
+        $notification = Notification::find($id);
+        if (!$notification) {
+            return response()->json(['error' => 'Notification not found'], 404);
+        }
+        $notification->statusRead = true;
+        $notification->save();
+        return response()->json($notification, 200);
+    }
 }

@@ -24,6 +24,8 @@ Route::middleware(['auth.custom','role:ROLE_ADMIN'])->group(function () {
     Route::get('/deactivate-client/{id}', [ClientController::class, 'desactiver'])->name('desactiver.client');
 
     Route::get('/transporteurs', [TransporteurController::class, 'index'])->name('transporteurs.index');
+    Route::get('/transporteur/{id}', [TransporteurController::class, 'detials'])->name('transporteur.details');
+
     Route::get('/deactivate-transporteur/{id}', [TransporteurController::class, 'desactiver'])->name('desactiver.transporteur');
     Route::get('/transporteurs/{id}/toggle-approuver', [TransporteurController::class, 'toggleApprouver'])->name('transporteurs.toggleApprouver');
     Route::get('/offres', [OffreController::class, 'index'])->name('offres.index');
