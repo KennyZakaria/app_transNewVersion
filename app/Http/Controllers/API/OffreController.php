@@ -245,6 +245,73 @@ class OffreController extends BaseController
             return $this->handleUnexpectedException($e);
         }
     }
+    public function update(Request $request, $offreId)
+{
+    try {
+        $validator = $this->validateRequest($request);
+        $placeDepart = null;
+        $placeArrivee = null;
+        $categorie = null;
+
+        if ($request->has('placeDepart')) {
+            $placeData = $request->input('placeDepart');
+            $placeDepart = $this->createPlace($placeData);
+        }
+
+        if ($request->has('placeArrivee')) {
+            $placeData = $request->input('placeArrivee');
+            $placeArrivee = $this->createPlace($placeData);
+        }
+
+        $categorie = $request->input('categorie');
+        $clientId = auth()->id();
+
+        $offre = $this->updateOffre($validator->validated(), $placeDepart, $placeArrivee, $clientId, $categorie, $offreId);
+
+        if ($request->has('photos')) {
+            $this->handlePhotos($request->input('photos'), $offre);
+        }
+
+        if ($request->has('chargement')) {
+            $this->handleChargement($request->input('chargement'), $offre);
+        }
+
+        $this->handleArticles($request->input('articles', []), $offre);
+
+        $offre = $this->loadOffreRelations($offre);
+
+        return response()->json([
+            'message' => 'Offre updated successfully',
+            'offre' => $offre,
+        ], 200);
+    } catch (ValidationException $e) {
+        return $this->handleValidationException($e);
+    } catch (QueryException $e) {
+        return $this->handleDatabaseException($e);
+    } catch (Exception $e) {
+        return $this->handleUnexpectedException($e);
+    }
+}
+protected function updateOffre(array $data, Place $placeDepart, Place $placeArrivee, $clientId, $categorie, $offreId)
+{
+    $offre = Offre::findOrFail($offreId);
+
+    $offre->fill($data);
+
+    if (isset($data['photosUrls']) && is_array($data['photosUrls'])) {
+        $data['photosUrls'] = implode(';', $data['photosUrls']);
+    }
+
+    $offre->categorie = $categorie['id'];
+    $offre->placeDepart()->associate($placeDepart);
+    $offre->placeArrivee()->associate($placeArrivee);
+    $offre->client_id = $clientId;
+
+    $offre->save();
+
+    return $offre;
+}
+
 
     protected function validateRequest(Request $request)
     {
@@ -310,6 +377,7 @@ class OffreController extends BaseController
         }
     }
 
+    
     protected function createOffre(array $data, Place $placeDepart, Place $placeArrivee, $clientId, $categorie)
     {
 
@@ -328,6 +396,8 @@ class OffreController extends BaseController
         $offre->save();
         return $offre;
     }
+
+
 
     protected function handlePhotos(array $photosData, Offre $offre)
     {
