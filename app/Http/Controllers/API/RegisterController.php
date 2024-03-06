@@ -79,7 +79,7 @@ class RegisterController extends BaseController
             'lastName' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email|max:255',
             'langKey' => 'required|string|max:255',
-            'tel' => 'required|string|max:20',
+            'tel' => 'string|max:20',
             'password' => 'required|string|min:8|max:255',
             'c_password' => 'required|same:password',
         ]);
