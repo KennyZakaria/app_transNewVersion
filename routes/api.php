@@ -17,6 +17,7 @@ use App\Http\Controllers\API\OfferTransporteurController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\ReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,6 +29,10 @@ use App\Http\Controllers\API\NotificationController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::post('review', [ReviewController::class, 'store']);
+Route::get('reviews/{id}', [ReviewController::class, 'show']);
+Route::get('reviews', [ReviewController::class, 'index']);
+
 Route::post('contact', [ContactController::class, 'store']);
 Route::get('offres', [OffreController::class, 'indexPublic']);
 

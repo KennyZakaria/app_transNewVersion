@@ -322,9 +322,10 @@ class DeviController    extends BaseController
         if($id != -1){
             $devis = $devis->where('offre_id', $id);
 
-        }else{
-            return $this->sendError('Offer not found.', ['error' => 'Devi not found add an offre first'], 404);
         }
+        // else{
+        //     return $this->sendError('Offer not found.', ['error' => 'Devi not found add an offre first'], 404);
+        // }
 
         $perPage = $request->input('per_page', 10);
         $devis = $devis->paginate($perPage);
