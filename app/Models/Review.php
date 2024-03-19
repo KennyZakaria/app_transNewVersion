@@ -10,10 +10,16 @@ class Review extends Model
     use HasFactory;
 
     protected $fillable = [
-        'transporterId',
+        'client_id',
+        'transporteur_id',
         'numStars',
         'comment',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
 
     public function transporteur()
     {

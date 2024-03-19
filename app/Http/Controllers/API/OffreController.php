@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\NotificationHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -232,9 +233,10 @@ class OffreController extends BaseController
             $this->handleArticles($request->input('articles', []), $offre);
 
             $offre = $this->loadOffreRelations($offre);
-
+            NotificationHelper::insertDemadeNotification($clientId ,"demandeCree",$offre);
+     
             return response()->json([
-                'message' => 'Offre created successfully',
+                'message' => 'Offre created successfullyy',
                 'offre' => $offre,
             ], 201);
         } catch (ValidationException $e) {

@@ -178,6 +178,28 @@ class DeviController    extends BaseController
        // return response()->json(['message' => 'Devis updated successfully']);
     }
 
+    public function terminerDevi(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'devis.id' => 'required|exists:devis,id'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['error' => 'Validation Error', 'errors' => $validator->errors()], 422);
+        }
+        $deviId = $request->input('devis.id');
+        $devis = Devi::with('offre')->find($deviId);
+
+        if (!$devis) {
+            return response()->json(['message' => 'Devis not found'], 404);
+        }
+        if ($devis->offre->client->id !== auth()->user()->id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        // NotificationHelper::insertNotification($devis->transporteur_id,"devisTerminerParClient",$devis->id);
+        $devis->update(['status' => 'Terminer']);
+        return $this->sendResponse('Devis terminated successfully.', 'Devis terminated successfully.');
+    }
+
     public function getDevi(Request $request, $status) {
         $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
             ->where('transporteur_id', Auth::id())
@@ -329,6 +351,11 @@ class DeviController    extends BaseController
 
         $perPage = $request->input('per_page', 10);
         $devis = $devis->paginate($perPage);
+        $devis->getCollection()->transform(function ($devi) {
+            $devi->offre_categorie_id = $devi->offre->categorie; // Change 'your_desired_field' to the field you want to include
+            unset($devi->offre); // Remove the offre object from the Devi instance if not needed anymore
+            return $devi;
+        });
         return response()->json(['message' => 'list Devis retrieved successfully', 'devis' => $devis], 200);
     }
     public function deleteDevis($deviId)

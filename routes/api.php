@@ -30,7 +30,6 @@ use App\Http\Controllers\API\ReviewController;
 |
 */
 Route::post('review', [ReviewController::class, 'store']);
-Route::get('reviews/{id}', [ReviewController::class, 'show']);
 Route::get('reviews', [ReviewController::class, 'index']);
 
 Route::post('contact', [ContactController::class, 'store']);
@@ -73,7 +72,8 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
     Route::get('/vehicules/{id}', [VehiculeController::class, 'show']);
     Route::put('/vehicules/{id}', [VehiculeController::class, 'update']);
     Route::delete('/vehicules/{id}', [VehiculeController::class, 'destroy']);
-
+    
+    Route::get('{transporterId}/reviews', [ReviewController::class, 'getTransporterReviews']);
     Route::get('getTransporteurDetails', [TransporteurController::class, 'getTransporteurDetails']);
     //Route::post('updateTransporteur', [TransporteurController::class, 'updateTransporteur']);
     Route::put('account', [ClientController::class, 'update']);
@@ -109,6 +109,7 @@ Route::prefix('/client')->middleware(['auth:api','role:ROLE_CLIENT'])->group(fun
     Route::post('devis/accept', [DeviController::class, 'acceptDevi']);
 
     Route::post('devis/rejeter', [DeviController::class, 'rejeterDevi']);
+    Route::post('devis/terminer', [DeviController::class, 'terminerDevi']);
     //get devi
     Route::get('devisByStatus/{status}',[DeviController::class, 'getDevisClientByStatus']);
     Route::get('devisByConnectedClient',[DeviController::class, 'getDevisByConnectedClient']);

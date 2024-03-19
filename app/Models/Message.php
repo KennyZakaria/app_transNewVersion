@@ -15,6 +15,7 @@ class Message extends Model
         'sender_id',
         'receiver_id',
         'devi_id',
+        'photo',
     ];
 
     public function sender()

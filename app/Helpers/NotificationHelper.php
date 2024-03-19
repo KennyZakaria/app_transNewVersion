@@ -14,21 +14,57 @@ use Illuminate\Support\Facades\Mail;
 
 class NotificationHelper
 {
+    
+  
+
+
+    public static function insertDemadeNotification($client_id,$notificationType,$offer){
+        $adminMail = 'client@transexpress.ma';
+        $clientAppLink = 'https://transexpress.ma/offre';
+        $adminAppLink = 'https://admin.transexpress.ma/offres';
+        $dateOperation = Carbon::now()->toDateTimeString();
+        $user = User::find($client_id);
+
+        $plcDe = Place::find($offer->placeDepart);
+        $plcAr = Place::find($offer->placeArrivee);
+        $categorie = Categorie::find($offer->categorie);
+        $categoryName = optional($categorie)->nomFr;
+        $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été bien crée est maintenant en cours de validation.
+        $clientAppLink/$offer->id/view";
+
+        $subject = "Votre demande ($categorie->nomFr) est en cours de validation";
+
+        Mail::to($user->email)->send(new ValidationMail($contentNotification, $subject));
+        Mail::to($adminMail)->send(new ValidationMail(
+            $adminAppLink,
+            "$user->firstName $user->lastName  demande en attant de validation"
+        ));
+    }
     public static function insertNotification($user_id, $notificationType, $deviDemandeCompte = null)
     {
         $dateOperation = Carbon::now()->toDateTimeString();
         $user = User::find($user_id);
         $contentNotification = "";
         switch ($notificationType) {
+            case 'demandeCree':
+                $offer = Offre::with(['categorie', 'placeDepart', 'placeArrivee'])->find($deviDemandeCompte);
+                $plcDe = Place::find($offer->placeDepart);
+                $plcAr = Place::find($offer->placeArrivee);
+                $categorie = Categorie::find($offer->categorie);
+                $categoryName = optional($categorie)->nomFr;
+                $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été bien cree est maintenant en attant de validation.";
+                $subject = "La demande a été crée.";
+                break;
             case 'demandeAcceptee':
                 $offer = Offre::with(['categorie', 'placeDepart', 'placeArrivee'])->find($deviDemandeCompte);
                 $plcDe = Place::find($offer->placeDepart);
                 $plcAr = Place::find($offer->placeArrivee);
                 $categorie = Categorie::find($offer->categorie);
                 $categoryName = optional($categorie)->nomFr;
-                $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été acceptée et est maintenant publiée sur notre site.";
+                $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été acceptée et est maintenant publiée sur notre site.
+                être prêt à recevoir des devis";
 
-                $subject = "Le demande a été acceptée.";
+                $subject = "La demande a été validé.";
                 break;
 
             case 'demandeRejetee':
@@ -39,7 +75,7 @@ class NotificationHelper
                 $categoryName = optional($categorie)->nomFr;
                 $contentNotification = "La demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été rejetée. ";
 
-                $subject = "Le demande a été rejetée.";
+                $subject = "La demande a été rejetée.";
                 break;
 
             case 'nouveauDevis':

@@ -12,4 +12,9 @@ class Client extends User
         'user_id'
     ];
     use HasFactory;
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -8,25 +8,60 @@ use Illuminate\Support\Facades\Validator;
 
 class ChatController extends BaseController
 {
+        // public function createMessage(Request $request)
+        // {
+        //     $validator = Validator::make($request->all(), [
+        //         'message' => 'required|string',
+        //         'devis.id' => 'required|integer',
+        //         'receiver.id' => 'required|integer'
+        //     ]);
+        //     if ($validator->fails()) {
+        //         return $this->sendError('Validation Error', $validator->errors(), 422);
+        //     }
+        //     $message = Message::create([
+        //         'date' => now(),
+        //         'message' => $request->input('message'),
+        //         'sender_id' => auth()->id(),
+        //         'receiver_id' => $request->input('receiver.id'),
+        //         'devi_id' => $request->input('devis.id')
+        //     ]);
+        //     return response()->json($message, 201);
+        // }
+        
         public function createMessage(Request $request)
         {
             $validator = Validator::make($request->all(), [
                 'message' => 'required|string',
                 'devis.id' => 'required|integer',
-                'receiver.id' => 'required|integer'
+                'receiver.id' => 'required|integer',
+                'photos.*.size' => 'nullable|string',
+                'photos.*.format' => 'nullable|string',
+                'photos.*.nom' => 'nullable|string',
+                'photos.*.url' => 'nullable|string', // Add this line for photo validation
             ]);
+
             if ($validator->fails()) {
                 return $this->sendError('Validation Error', $validator->errors(), 422);
             }
+
+            $photoPath = null;
+
+            if ($request->hasFile('photo')) {
+                $photoPath = $request->file('photo')->store('photos'); // Adjust the storage path as needed
+            }
+
             $message = Message::create([
                 'date' => now(),
                 'message' => $request->input('message'),
                 'sender_id' => auth()->id(),
                 'receiver_id' => $request->input('receiver.id'),
-                'devi_id' => $request->input('devis.id')
+                'devi_id' => $request->input('devis.id'),
+                'photo' => $photoPath,
             ]);
+
             return response()->json($message, 201);
         }
+
         public function MessageByDevis(Request $request)
         {
 
