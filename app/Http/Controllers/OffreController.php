@@ -63,8 +63,12 @@ class OffreController extends Controller
         return view('offres.index', ['offres' => $offresArray,'categories' => $categories]);
     }*/
     public function index(Request $request)
-    {
-        $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement', 'devis.acceptAction']);
+    {   
+        $query = Offre::with(['categorie', 
+        'client.user' => function ($query) {
+            $query->select('id', 'firstName', 'lastName', 'email'); 
+        },
+        'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement', 'devis.acceptAction']);
         $categories = Categorie::all();
         $dateDebut = $request->input('dateDebut');
         $dateFin = $request->input('dateFin');
@@ -110,7 +114,7 @@ class OffreController extends Controller
 
         $offres = $query->paginate(10);
         $offresArray = $offres->toArray();
-        return view('offres.index', ['offres' => $offresArray, 'categories' => $categories]);
+        return view('offres.index', ['offres' => $offres, 'offersArray' => $offresArray, 'categories' => $categories]);
     }
 
 
@@ -122,7 +126,7 @@ class OffreController extends Controller
         $demandeType = "demandeRejetee";
         if ($status === "Valide")
             $demandeType = 'demandeAcceptee';
-        NotificationHelper::insertNotification($offre->client_id, $demandeType, $offre->id);
+        NotificationHelper::insertOfferStatusNotification($offre->client_id,$demandeType, $offre);
         return redirect()->route('offres.index')->with('success', 'Offre status updated successfully.');
     }
     public function listeDevis($IdDemande)

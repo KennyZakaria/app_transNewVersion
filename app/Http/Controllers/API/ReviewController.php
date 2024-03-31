@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Review;
+use Illuminate\Database\QueryException;
 
 class ReviewController extends Controller
 {
@@ -22,20 +23,27 @@ class ReviewController extends Controller
     }
     public function getTransporterReviews(Request $request, $transporterId)
     {
-        $reviews = Review::with(['client.user' => function ($query) {
-            $query->select('id', 'firstName', 'lastName','email'); // Select only id and name from clients table
-        }])
-        ->where('transporteur_id', $transporterId)->get();
-        
-        if ($reviews->isEmpty()) {
-            return response()->json(['message' => 'No reviews found for the specified transporter ID.'], 404);
+        try {
+            $reviews = Review::with(['client.user' => function ($query) {
+                $query->select('id', 'firstName', 'lastName', 'email'); 
+            }])
+            ->where('transporteur_id', $transporterId)
+            ->get();
+    
+            if ($reviews->isEmpty()) {
+                return response()->json(['message' => 'No reviews found for the specified transporter ID.'], 404);
+            }
+    
+            $reviews->transform(function ($review) {
+                $review['user'] = $review->client->user;
+                unset($review['client']);
+                return $review;
+            });
+    
+            return response()->json($reviews, 200);
+        } catch (QueryException $exception) {
+            return response()->json(['message' => 'Failed to retrieve reviews. Database error.'], 500);
         }
-        $reviews->transform(function ($review) {
-            $review['user'] = $review->client->user;
-            unset($review['client']);
-            return $review;
-        });
-        return response()->json($reviews, 200);
     }
 
     public function store(Request $request)

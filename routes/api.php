@@ -55,6 +55,7 @@ Route::post('CheckMail', [UserController::class, 'CheckMail'] );
 
 Route::post('upload', [FileUploadController::class, 'upload']);
 Route::get('download/{folder}/{filename}', [FileUploadController::class, 'download'])->name('download');
+Route::get('download2', [FileUploadController::class, 'getPhotosAsFiles']);
 Route::delete('remove/{folder}/{filename}', [FileUploadController::class, 'remove']);
 
 Route::middleware('auth:api')->group( function () {

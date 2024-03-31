@@ -40,6 +40,28 @@ class FileUploadController extends BaseController
         ], 'File uploaded successfully', 200);
     }
 
+    public function getPhotosAsFiles(){
+        $filePaths = [
+            'FolderOffres/1711894373_success-icon.png',
+            
+            // Add more file paths or names as needed
+        ];
+        
+        $files = [];
+        
+        foreach ($filePaths as $filePath) {
+            // Check if the file exists before reading its contents
+            if (Storage::exists($filePath)) {
+                // Read the contents of the file
+                $fileContents = Storage::get($filePath);
+                
+                // Add the file contents to the array
+                $files[$filePath] = $fileContents;
+                
+            }
+        }
+        return response($files);
+    }
     public function download($folder, $filename)
     {
         if (!in_array($folder, ['FolderPhVehicule', 'FolderPhCin', 'FolderPhPieceJoindre', 'FolderOffres'])) {

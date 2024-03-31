@@ -233,7 +233,7 @@ class OffreController extends BaseController
             $this->handleArticles($request->input('articles', []), $offre);
 
             $offre = $this->loadOffreRelations($offre);
-            NotificationHelper::insertDemadeNotification($clientId ,"demandeCree",$offre);
+            NotificationHelper::insertOfferCreatedNotification($clientId ,"demandeCree",$offre);
      
             return response()->json([
                 'message' => 'Offre created successfullyy',
@@ -273,11 +273,11 @@ class OffreController extends BaseController
         if ($request->has('photos')) {
             $this->handlePhotos($request->input('photos'), $offre);
         }
-
+        Chargement::where('offre_id', '=', $offreId)->delete();
         if ($request->has('chargement')) {
             $this->handleChargement($request->input('chargement'), $offre);
         }
-
+        Article::where('offre_id', '=', $offreId)->delete();
         $this->handleArticles($request->input('articles', []), $offre);
 
         $offre = $this->loadOffreRelations($offre);
@@ -487,6 +487,7 @@ protected function updateOffre(array $data, Place $placeDepart, Place $placeArri
 
             }
             $offre->delete();
+            //  NotificationHelper::insertOfferCreatedNotification(21 ,"demandeCree",$offre);
             return response()->json(['message' => 'Offer  deleted successfully']);
         } catch (ModelNotFoundException $e) {
             return $this->sendError('Offer not found.', ['error' => 'Offer not found'], 404);

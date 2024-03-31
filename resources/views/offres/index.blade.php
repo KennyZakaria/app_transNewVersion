@@ -52,6 +52,7 @@
             <thead>
                 <tr>
                     <th><span>Catégorie</span></th>
+                    <th><span>Client</span></th>
                     <th><span>Availablity</span></th>
                     <th><span>Status</span></th>
                     <th><span>Nombre Devis</span></th>
@@ -59,9 +60,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($offres['data'] as $offre)
+                @foreach ($offersArray['data'] as $offre)
                     <tr>
                         <td>{{ $offre['categorie']['nomFr'] }}</td>
+                        <td> 
+                             {{$offre['client']['user']['firstName']}} {{ $offre['client']['user']['lastName']}}
+                        </td>
                         <td>{{ \Carbon\Carbon::parse($offre['dateDebut'])->format('d/m/Y') }} -
                             {{ \Carbon\Carbon::parse($offre['dateFin'])->format('d/m/Y') }}</td>
                         <td>
@@ -121,7 +125,7 @@
                 @endforeach
             </tbody>
         </table>
-        {{-- @include('parts.custom_pagination', ['paginator' => $offres]) --}}
+       @include('parts.custom_pagination', ['paginator' => $offres]) 
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
