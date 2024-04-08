@@ -1,6 +1,7 @@
 @extends('layouts.default')
 
 @section('content')
+<h2 class="titre-accepted-offres">Liste <span>Offres</span></h2>
     <form action="{{ route('offres.index') }}" method="GET" id="searchForm">
         @csrf
         <div class="row">

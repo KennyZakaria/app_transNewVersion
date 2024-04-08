@@ -24,9 +24,8 @@
 </head>
 
 <body>
-
     <header class="navbar sticky-top flex-md-nowrap p-0 shadow" data-bs-theme="dark">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="dashboard.html"><img
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{{ route('dashboard.dashboard') }}"><img
                 src="../assets/img/transexpress-logo.svg"></a>
         <div class="dropdown">
             <button class=" btn-secondary dropdown-toggle" type="button" id="dropouz" data-bs-toggle="dropdown"
@@ -37,20 +36,14 @@
                 </span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropouz">
+            @foreach($notifications as $notification)
                 <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna
-                </li>
+                    {{ $notification->notificationContent }}
+                    <a href="{{ route('change.status.notification', ['id' => $notification->id, 'status' => 1]) }}" style="float: right;color:red;"><i class="fa-solid fa-trash-can"></i></a>
+              </li>
+
                 <li class="separate"></li>
-                <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna
-                </li>
-                <li class="separate"></li>
-                <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna
-                </li>
+                @endforeach
             </ul>
         </div>
         <ul class="navbar-nav flex-row ">
@@ -101,6 +94,12 @@
                                 <a class="nav-link d-flex align-items-center gap-2" href="{{ route('offres.index') }}">
                                     <i class="fa fa-check" aria-hidden="true"></i>
                                     Demande
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('devises.index') }}">
+                                    <i class="fa fa-check" aria-hidden="true"></i>
+                                    Devis
                                 </a>
                             </li>
                         </ul>

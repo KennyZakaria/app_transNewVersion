@@ -201,47 +201,82 @@ class DeviController    extends BaseController
     }
 
     public function getDevi(Request $request, $status) {
-        $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
+        
+        $devis = Devi::with('offre','offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')
             ->where('transporteur_id', Auth::id())
             ->where('status', $status);
-
+    
         if ($request->has('dateDebut')) {
-
             $dateDebut = $request->input('dateDebut');
-            $devis->whereHas('offre', function ($query) use ($dateDebut) {
-                $query->where('dateDebut', '>=', $dateDebut);
-            });
+            $devis->where('dateDebut', '>=', $dateDebut);
+
         }
+    
         if ($request->has('dateFin')) {
             $dateFin = $request->input('dateFin');
-            $devis->whereHas('offre', function ($query) use ($dateFin) {
-                $query->where('dateFin', '<=', $dateFin);
+            \Log::info('Received date: ' . $dateFin);
+         
+            $devis->where('dateFin', '<=', $dateFin);
+        }
+    
+        if ($request->has('categorie')) {
+           
+            $categorie = $request->input('categorie');
+            \Log::info('Received categorie_id: ' . $categorie);
+            $devis->whereHas('offre', function ($query) use ($categorie) {
+                $query->where('categorie', $categorie);
             });
         }
+
+        if ($request->has('placeDepart')) {
+            $placeDepart = $request->input('placeDepart');
+            $devis->whereHas('offre.placeDepart', function ($query) use ($placeDepart) {
+                $query->where('nomFr', 'like', '%' . $placeDepart . '%');
+            });
+        }
+        if ($request->has('placeArrivee')) {
+            $placeArrivee = $request->input('placeArrivee');
+            $devis->whereHas('offre.placeArrivee', function ($query) use ($placeArrivee) {
+                $query->where('nomFr', 'like', '%' . $placeArrivee . '%');
+            });
+        }
+
+    
         $devis = $devis->get();
+    
+        if ($devis->isEmpty()) {
+            return response()->json(['message' => 'No Devis found.', 'devis' => $devis], 201);
+        }
+    
         $listdevis = $devis->map(function ($devi) {
-            $plcDe = Place::where('id', $devi->offre->placeDepart)->first();
-            $plcAr = Place::where('id', $devi->offre->placeArrivee)->first();
-            $transporteurId = auth()->user()->id;
-            $existingDevi = Devi::where('offre_id', $devi->offre->id)
-                ->where('transporteur_id', $transporteurId)
-                ->first();
-
-            if ($existingDevi) {
-                $existingDevi->offre->alreadySubmit = true;
+            if ($devi->offre) {
+                $plcDe = Place::find($devi->offre->placeDepart);
+                $plcAr = Place::find($devi->offre->placeArrivee);
+                $transporteurId = auth()->user()->id;
+                $existingDevi = Devi::where('offre_id', $devi->offre->id)
+                    ->where('transporteur_id', $transporteurId)
+                    ->first();
+    
+                if ($existingDevi) {
+                    $existingDevi->offre->alreadySubmit = true;
+                } else {
+                    $devi->offre->alreadySubmit = false;
+                }
+    
+                $devi->offre->placeDepart = $plcDe ? $plcDe : null;
+                $devi->offre->placeArrivee = $plcAr ? $plcAr : null;
             } else {
-                $devi->offre->alreadySubmit = false;
+                $plcDe = null;
+                $plcAr = null;
+                $devi->offre = (object)['alreadySubmit' => false];
             }
-            unset($devi->offre->placeDepart);
-            unset($devi->offre->placeArrivee);
-            $devi->offre->placeDepart = $plcDe;
-            $devi->offre->placeArrivee = $plcAr;
-
+    
             return $devi;
         });
-
+    
         return response()->json(['message' => 'list Devis retrieved successfully', 'data' => $listdevis], 200);
     }
+    
     public function getDevisClientByStatus(Request $request, $status)
     {
         $devis = Devi::with('offre', 'offre.placeDepart', 'offre.placeArrivee', 'offre.categorie')

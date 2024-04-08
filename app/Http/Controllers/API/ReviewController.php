@@ -31,7 +31,7 @@ class ReviewController extends Controller
             ->get();
     
             if ($reviews->isEmpty()) {
-                return response()->json(['message' => 'No reviews found for the specified transporter ID.'], 404);
+                return response()->json($reviews, 201);
             }
     
             $reviews->transform(function ($review) {

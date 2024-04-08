@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BaseController as BaseController;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\Categorie;
+use App\Models\Notification;
 use App\Models\Role;
 use App\Models\Transporteur;
 use Illuminate\Support\Facades\DB;
@@ -112,12 +113,20 @@ class RegisterController extends BaseController
 
             ]);
             DB::commit();
-            return response()->json(['message' => 'Transporteur created successfully', 'data' => $Client], 201);
+            Notification::create([
+                'user_id' => $user->id,
+                'notificationType' => 'compteCree',
+                'deviDemandeCompteId' => 404,
+                'notificationContent'=> 'Un nouvel utilisateur s est inscrit. sur le Nom ' . $user->firstName . ' ' .$user->lastName,
+            ]);
+            return response()->json(['message' => 'Client created successfully', 'data' => $Client], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
-        return response()->json(['message' => 'Transporteur created successfully', 'data' => $Client], 201);
+
+
+        return response()->json(['message' => 'Client created successfully', 'data' => $Client], 201);
     }
     public function transporteurRegister(Request $request)
     {
@@ -180,11 +189,18 @@ class RegisterController extends BaseController
             DB::commit();
             $transporteur->id=$transporteur->user_id;
             $transporteur->categories()->attach($categories);
+            Notification::create([
+                'user_id' => $user->id,
+                'notificationType' => 'compteCree',
+                'deviDemandeCompteId' => 404,
+                'notificationContent'=> 'Un nouvel Transporteur s est inscrit. sur le Nom ' . $user->firstName . ' ' .$user->lastName,
+            ]);
             return response()->json(['message' => 'Transporteur created successfully', 'data' => $transporteur], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
+
         return response()->json(['message' => 'Transporteur created successfully', 'data' => $transporteur], 201);
     }
 

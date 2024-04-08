@@ -16,6 +16,31 @@ class OfferTransporteurController extends BaseController
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction','devis.transporteur']);
 
         $query->where('status', 'valide');
+        if ($request->has('categorie')) {
+            $categorie = $request->input('categorie');
+            $query->where('categorie', $categorie);
+        }
+        if ($request->has('dateDebut')) {
+            $dateDebut = $request->input('dateDebut');
+            $query->where('dateDebut', '>=', $dateDebut);
+        }
+        if ($request->has('dateFin')) {
+            $dateFin = $request->input('dateFin');
+            $query->where('dateFin', '<=', $dateFin);
+        }
+        if ($request->has('placeDepart')) {
+            $placeDepart = $request->input('placeDepart');
+            $query->whereHas('placeDepart', function ($query) use ($placeDepart) {
+                $query->where('nomFr', $placeDepart);
+            });
+        }
+        if ($request->has('placeArrivee')) {
+            $placeArrivee = $request->input('placeArrivee');
+            $query->whereHas('placeArrivee', function ($query) use ($placeArrivee) {
+                $query->where('nomFr', $placeArrivee);
+            });
+        }
+    
         $transporteurId = auth()->user()->id;
         $perPage = $request->input('per_page', 10);
         $offres = $query->paginate($perPage);

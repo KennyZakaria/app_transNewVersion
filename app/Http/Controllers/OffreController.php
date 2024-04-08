@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\NotificationHelper;
 use App\Helpers\OfferHelper;
 use App\Models\Categorie;
+use App\Models\Notification;
 use App\Models\Devi;
 use App\Models\Message;
 use App\Models\Offre;
@@ -114,7 +115,10 @@ class OffreController extends Controller
 
         $offres = $query->paginate(10);
         $offresArray = $offres->toArray();
-        return view('offres.index', ['offres' => $offres, 'offersArray' => $offresArray, 'categories' => $categories]);
+
+        $notifications = Notification::getUnreadCompteCreeNotifications();
+
+        return view('offres.index', ['offres' => $offres, 'offersArray' => $offresArray, 'categories' => $categories ,'notifications' =>$notifications ]);
     }
 
 
@@ -133,7 +137,8 @@ class OffreController extends Controller
     {
         $offre = Offre::findOrFail($IdDemande);
         $devis = Devi::Where("offre_id", $IdDemande)->get();
-        return view('offres.listeDevis', ['devis' => $devis, 'offre' => $offre]);
+        $notifications = Notification::getUnreadCompteCreeNotifications();
+        return view('offres.listeDevis', ['devis' => $devis, 'offre' => $offre,'notifications' =>$notifications]);
     }
     public function ChatDevi($deviId)
     {
@@ -159,7 +164,7 @@ class OffreController extends Controller
         $user2 = null;
         $messages = collect();
     }
-
-    return view('offres.chat', compact('user1', 'user2', 'messages'));
+    $notifications = Notification::getUnreadCompteCreeNotifications();
+    return view('offres.chat', compact('user1', 'user2', 'messages','notifications'));
     }
 }

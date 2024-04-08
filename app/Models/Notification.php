@@ -21,7 +21,12 @@ class Notification extends Model
         'dateCreation' => 'datetime',
         'statusRead' => 'boolean',
     ];
-
+    public static function getUnreadCompteCreeNotifications()
+    {
+        return Notification::where('notificationType', 'compteCree')
+            ->where('statusRead', 0)
+            ->get();
+    }
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

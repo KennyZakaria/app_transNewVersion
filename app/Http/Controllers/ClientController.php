@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
+use App\Models\Notification;
 use App\Models\Client;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -35,7 +36,8 @@ class ClientController extends Controller
 
         $clients = $query->paginate(10);
 
-        return view('clients.index', ['clients' => $clients]);
+        $notifications = Notification::getUnreadCompteCreeNotifications();  
+        return view('clients.index', ['clients' => $clients,'notifications' =>$notifications]);
     }
     public function desactiver($id)
     {

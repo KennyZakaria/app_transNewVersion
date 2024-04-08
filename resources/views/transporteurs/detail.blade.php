@@ -1,9 +1,40 @@
+<style>
+    .gold{
+        color:gold;
+    }
+</style>
+
 @extends('layouts.default')
 
 @section('content')
     <h2 class="titre-accepted-offres">Details <span>Transporteur</span></h2>
     <form class="pg-contact">
         <div class="row justify-content-center profile">
+    
+        <div class="col-md-10 my-4">
+                    <label>Notation :</label>
+                    
+                    <i class="@if($rating<=0) fa-solid fa-sm fa-star
+                     @elseif($rating>=1) fa-solid fa-sm fa-star gold 
+                     @else fa-solid fa-sm fa-star-half-stroke gold 
+                     @endif"></i>
+                    <i class="@if($rating<=1) fa-solid fa-sm fa-star
+                     @elseif($rating>=2) fa-solid fa-sm fa-star gold 
+                     @else fa-solid fa-sm fa-star-half-stroke gold 
+                     @endif"></i>
+                    <i class="@if($rating<=2) fa-solid fa-sm fa-star
+                     @elseif($rating>=3) fa-solid fa-sm fa-star gold 
+                     @else fa-solid fa-sm fa-star-half-stroke gold 
+                     @endif"></i>
+                    <i class="@if($rating<=3) fa-solid fa-sm fa-star
+                     @elseif($rating>=4) fa-solid fa-sm fa-star gold 
+                     @else fa-solid fa-sm fa-star-half-stroke gold 
+                     @endif"></i>
+                    <i class="@if($rating<=4) fa-solid fa-sm fa-star
+                     @elseif($rating>=5) fa-solid fa-sm fa-star gold 
+                     @else fa-solid fa-sm fa-star-half-stroke gold 
+                     @endif"></i>
+                </div>
             <div class="col-md-5">
                 <div>
                     <label>Name</label>
@@ -67,11 +98,7 @@
 
 
     cinFront.addEventListener('click', function() {
-               // Get the src attribute value of the clicked image
-               var imgSrc = cinFront.getAttribute('src');
-
-                // Print the src value to the console
-                console.log(imgSrc);
+        var imgSrc = cinFront.getAttribute('src');
         window.open('{{ $transporteur->CinRectoURU }}', '_blank');
     });
     cinBack.addEventListener('click', function() {

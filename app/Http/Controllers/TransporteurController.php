@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Helpers\NotificationHelper;
 use App\Models\Transporteur;
+use App\Models\Notification;
+use App\Models\Review;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -42,7 +44,9 @@ class TransporteurController extends Controller
         }
 
         $transporteurs = $query->paginate(10);
-        return view('transporteurs.index', ['transporteurs' => $transporteurs]);
+
+        $notifications = Notification::getUnreadCompteCreeNotifications();
+        return view('transporteurs.index', ['transporteurs' => $transporteurs,'notifications' =>$notifications]);
     }
     public function desactiver($id)
     {
@@ -76,6 +80,20 @@ class TransporteurController extends Controller
     public function detials($id)
     {
         $transporteur=Transporteur::with("user")->find($id);
-        return view('transporteurs.detail', ['transporteur' => $transporteur]);
+        $reviews = Review::where('transporteur_id', $transporteur->id)->get();
+        $revlist = [];
+        $totalStars=0;
+        $overAllRating=0;
+
+        foreach ($reviews as &$review) {
+            $totalStars += $review->numStars;
+            // array_push($revlist ,$review->numStars);
+            
+        }
+        if (count($reviews)>0) {
+            $overAllRating =  $totalStars / count($reviews);
+        }
+        $notifications = Notification::getUnreadCompteCreeNotifications();
+        return view('transporteurs.detail',['transporteur' => $transporteur], ['rating' => $overAllRating ,'notifications' =>$notifications ]);
     }
 }

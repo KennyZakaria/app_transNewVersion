@@ -64,6 +64,16 @@ class NotificationHelper
             "$user->firstName $user->lastName  demande en attant de validation",
             $adminAppLink
         ));
+        // $user_id = ;
+        // $notificationType = "nouveauDemande",
+        // $deviDemandeCompte = ;
+        // $contentNotification = ;
+        // Notification::create([
+        //     'user_id' => $user_id,
+        //     'notificationType' => $notificationType,
+        //     'deviDemandeCompteId' => $deviDemandeCompte,
+        //     'notificationContent'=> $contentNotification,
+        // ]);
     }
     public static function insertNotification($user_id, $notificationType, $deviDemandeCompte = null)
     {

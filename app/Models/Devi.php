@@ -30,7 +30,7 @@ class Devi extends Model
     }
     public function offre()
     {
-        return $this->belongsTo(Offre::class);
+        return $this->belongsTo(Offre::class,"offre_id");
     }
 
     public function transporteur()

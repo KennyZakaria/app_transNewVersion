@@ -88,6 +88,7 @@
         </div>
 
         <div class="col-md-4 col-xl-3">
+        <a href="{{ route('devises.index') }}" style="text-decoration: none;">
             <div class="card bg-c-pink order-card">
                 <div class="card-block">
                     <h2 class="text-right"><i class="fa fa-credit-card f-left"></i><span>{{ $numDevis }}</span></h2>
@@ -95,6 +96,7 @@
                 </div>
             </div>
         </div>
+        </a>
     </div>
 
     <h5>Top 10 des clients par nombre de demandes</h5>

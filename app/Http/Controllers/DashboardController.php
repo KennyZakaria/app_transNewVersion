@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categorie;
 use App\Models\Client;
+use App\Models\Notification;
 use App\Models\Devi;
 use App\Models\Offre;
 use App\Models\Transporteur;
@@ -46,8 +47,18 @@ class DashboardController extends Controller
      $categoriesWithCounts = Categorie::withCount('offers')->get();
 
      $categoryOfferCounts = $categoriesWithCounts->pluck('offers_count')->toArray();
+     $notifications = Notification::getUnreadCompteCreeNotifications();
 
-     return view('dashbord.dashborad', compact('labels', 'data',
+     return view('dashbord.dashborad', compact('labels', 'data','notifications',
      'categoriesWithCounts', 'categoryOfferCounts','numClients','numTransporters','numDemande','numDevis'));
+    }
+
+    public function changeStatusNotification($id, $status)
+    {
+        $notification = Notification::findOrFail($id);
+        $notification->statusRead = $status;
+        $notification->save();
+
+         return redirect()->route('dashboard.dashboard');
     }
 }
