@@ -42,7 +42,7 @@ class TransporteurController extends Controller
                 $userQuery->where('desactiver', $status);
             });
         }
-
+        $query->orderBy('created_at', 'desc');
         $transporteurs = $query->paginate(10);
 
         $notifications = Notification::getUnreadCompteCreeNotifications();
@@ -69,9 +69,9 @@ class TransporteurController extends Controller
         $transporteur = Transporteur::findOrFail($id);
         $transporteur->approuver = !$transporteur->approuver;
         if($transporteur->approuver){
-            NotificationHelper::insertNotification($id,"compteApprouve",$id);
+            NotificationHelper::insertAccountStatusNotification($id,"compteApprouve");
         }else{
-            NotificationHelper::insertNotification($id,"compteRejete",$id);
+            NotificationHelper::insertAccountStatusNotification($id,"compteRejete");
         }
 
         $transporteur->save();

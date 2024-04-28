@@ -20,10 +20,20 @@
     <!-- Core theme CSS (includes Bootstrap)-->
     <link rel="stylesheet" href="{{ asset('/css/styles.css') }}">
     <link href="../css/dashboard.css" rel="stylesheet" />
+    <style>
+        .scrollable-card-body {
+            max-height: 70vh; 
+            overflow-y: auto; 
+            }
 
+    </style>
 </head>
 
 <body>
+@php
+    
+    $currentRoute = Route::currentRouteName();
+@endphp
     <header class="navbar sticky-top flex-md-nowrap p-0 shadow" data-bs-theme="dark">
         <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{{ route('dashboard.dashboard') }}"><img
                 src="../assets/img/transexpress-logo.svg"></a>
@@ -35,7 +45,7 @@
                     class="position-absolute top-13 start-50 translate-middle p-35 bg-danger border border-light rounded-circle">
                 </span>
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropouz">
+            <ul class="dropdown-menu scrollable-card-body" aria-labelledby="dropouz">
             @foreach($notifications as $notification)
                 <li>
                     {{ $notification->notificationContent }}
@@ -43,6 +53,7 @@
               </li>
 
                 <li class="separate"></li>
+
                 @endforeach
             </ul>
         </div>
@@ -70,7 +81,7 @@
                     <div class="offcanvas-body d-md-flex flex-column p-0 pt-lg-3 overflow-y-auto">
                         <ul class="nav flex-column">
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2 active" aria-current="page"
+                                <a class="nav-link d-flex align-items-center gap-2 {{ $currentRoute == 'dashboard.dashboard' ? 'active' : '' }}" aria-current="page"
                                 href="{{ route('dashboard.dashboard') }}">
                                     <i class="fa fa-home" aria-hidden="true"></i>
                                     Dashboard
@@ -78,26 +89,26 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('clients.index') }}">
+                                <a class="nav-link d-flex align-items-center gap-2 {{ $currentRoute == 'clients.index' ? 'active' : '' }}" href="{{ route('clients.index') }}">
                                     <i class="fa fa-user" aria-hidden="true"></i>
                                     Client
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2"
+                                <a class="nav-link d-flex align-items-center gap-2 {{ $currentRoute == 'transporteurs.index' ? 'active' : '' }}"
                                     href="{{ route('transporteurs.index') }}">
                                     <img src="{{ asset('assets/img/driver.png') }}" alt="Driver Icon" width="20" height="20">
                                     Transporteur
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('offres.index') }}">
+                                <a class="nav-link d-flex align-items-center gap-2 {{ $currentRoute == 'offres.index' ? 'active' : '' }}" href="{{ route('offres.index') }}">
                                     <i class="fa fa-check" aria-hidden="true"></i>
                                     Demande
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('devises.index') }}">
+                                <a class="nav-link d-flex align-items-center gap-2 {{ $currentRoute == 'devises.index' ? 'active' : '' }}" href="{{ route('devises.index') }}">
                                     <i class="fa fa-check" aria-hidden="true"></i>
                                     Devis
                                 </a>
@@ -135,6 +146,8 @@
                 document.location = 'details.html';
             }
         }
+        
+        
     </script>
 </body>
 

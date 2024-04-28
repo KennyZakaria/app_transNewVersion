@@ -43,7 +43,7 @@ class DeviController extends Controller
                 $query->where('typeVehicule', $typeVehicule);
             }
 
-
+            $query->orderBy('created_at', 'desc');
             $devises = $query->paginate(10);
             $devisesArray = $devises->toArray();
             

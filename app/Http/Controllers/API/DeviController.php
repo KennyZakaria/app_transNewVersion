@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Devi;
 use App\Models\Offre;
 use App\Models\Place;
+use App\Models\Transporteur;
 use App\Models\AcceptAction;
 use Validator;
 use Carbon\Carbon;
@@ -20,11 +21,16 @@ class DeviController    extends BaseController
 {
     public function addDevi(Request $request)
     {
+        $user = $request->user();
+        $transporteur = Transporteur::where('user_id', $user->id)->first();
+        if ($transporteur && $transporteur->approuver == 0) {
+            return $this->sendError('Transporteur not approved. Cannot add devis.', [], 403);
+        }
         $validator = Validator::make($request->all(), [
             'typeVehicule' => 'required',
             'dateDebut' => 'nullable|date',
             'dateFin' => 'nullable|date',
-            'description' => 'string',
+            'description' => 'nullable|string',
             'flexibleDate' => 'boolean',
             'prix' => 'nullable|numeric',
             'offre.id' => 'required|exists:offres,id',
@@ -241,7 +247,7 @@ class DeviController    extends BaseController
             });
         }
 
-    
+        $devis->orderBy('created_at', 'desc');
         $devis = $devis->get();
     
         if ($devis->isEmpty()) {
@@ -273,7 +279,7 @@ class DeviController    extends BaseController
     
             return $devi;
         });
-    
+        
         return response()->json(['message' => 'list Devis retrieved successfully', 'data' => $listdevis], 200);
     }
     
@@ -383,7 +389,7 @@ class DeviController    extends BaseController
         // else{
         //     return $this->sendError('Offer not found.', ['error' => 'Devi not found add an offre first'], 404);
         // }
-
+        $devis = $devis->orderBy('created_at', 'desc');
         $perPage = $request->input('per_page', 10);
         $devis = $devis->paginate($perPage);
         $devis->getCollection()->transform(function ($devi) {

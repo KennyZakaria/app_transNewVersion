@@ -169,7 +169,7 @@
                                         <tr>
                                             <td align="center"   >
 
-                                                <p style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:16px;line-height:19px;font-weight:700;font-style:normal;color:#008000;text-decoration:none;letter-spacing:0px;padding: 20px 50px 20px 50px;display: inline-block;"><span>{{ __('votre demande a été approuvée') }}</span></p>
+                                                <p style="font-family:'Roboto Slab',Arial,Helvetica,sans-serif;font-size:16px;line-height:19px;font-weight:700;font-style:normal;color:#008000;text-decoration:none;letter-spacing:0px;padding: 20px 50px 20px 50px;display: inline-block;"><span>{{ $mailData }}</span></p>
 
                                             </td>
                                         </tr>

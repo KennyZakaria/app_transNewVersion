@@ -180,6 +180,7 @@ class RegisterController extends BaseController
                 'id' => $user->id,
                 'ville_id' => $request->input('ville_id'),
                 'pieceJoindreByType'=>$request->input('pieceJoindreByType'),
+                'approuver' => 0
             ]);
             $categorieIds = $request->input('categories_ids'); // Corrected line
             $categories=null;

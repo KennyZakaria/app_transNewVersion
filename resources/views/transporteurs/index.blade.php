@@ -93,14 +93,14 @@
                                             ...
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownAction">
-                                            <li>
+                                            <!-- <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('desactiver.client', ['id' => $transporteur->id]) }}">
                                                     <i class="fa-solid fa-user-slash"></i>
                                                     {{ $transporteur->desactiver ? 'Activer' : 'Désactiver' }} transporteur
                                                 </a>
-                                            </li>
-                                            <li class="separate"></li>
+                                            </li> 
+                                            <li class="separate"></li>-->
                                             <li>
                                                 <a class="dropdown-item"
                                                     href="{{ route('transporteurs.toggleApprouver', ['id' => $transporteur->id]) }}">

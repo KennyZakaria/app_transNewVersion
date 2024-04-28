@@ -192,8 +192,8 @@ class OffreController extends BaseController
             $query->where('categorie', $categorie);
         }
         $query->where('client_id',$client->id );
-
-        $perPage = $request->input('per_page', 10);
+        $query->orderBy('created_at', 'desc');
+        $perPage = $request->input('per_page', 100);
         $offres = $query->paginate($perPage);
 
          $offresArray = $offres->toArray();

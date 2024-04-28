@@ -17,26 +17,52 @@ use Illuminate\Support\Facades\Mail;
 
 class NotificationHelper
 {
+    public static function insertAccountStatusNotification($user_id,$notificationType){
+        $user = User::find($user_id);
+        $contentNotification = "";
+
+        switch ($notificationType) {
+            case 'compteApprouve':
+                $contentNotification = "Votre compte a été approuvé. ";
+                $subject = "Compte approuvé. vous pouvez soumettre des devis maintenant";
+                  Mail::to($user->email)->send(new ValidationMailAdmin($contentNotification, $subject));
+                break;
+            case 'compteRejete':
+                $contentNotification = "Votre compte a été rejeté. " ;
+                $subject = "Compte rejeté.";
+                Mail::to($user->email)->send(new RejectionMailAdmin($contentNotification, $subject));
+                break;
+        }
+        
+    }
     public static function insertOfferStatusNotification($client_id,$notificationType,$offer){
         $user = User::find($client_id);
         $plcDe = Place::find($offer->placeDepart);
         $plcAr = Place::find($offer->placeArrivee);
         $categorie = Categorie::find($offer->categorie);
         $categoryName = optional($categorie)->nomFr;
-        $contentNotification = "Votre ($plcDe->nomFr --> $plcAr->nomFr) demande a été acceptée et est maintenant publiée sur notre site.
-        être prêt à recevoir des devis";
+        $contentNotification = "";
 
 
         switch ($notificationType) {
             case 'demandeAcceptee':
-                $subject = "La demande a été validé.";
+    
+                $contentNotification = "Votre demande a été validé.";
+                $subject = "La demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été acceptée. soyez prêt à recevoir des devis";
                 Mail::to($user->email)->send(new ValidationMailAdmin($contentNotification, $subject));
                 break;
             case 'demandeRejetee':
-                $subject = "La demande a été Rejetée.";
+                $contentNotification = "Votre demande a été Rejetée.";
+                $subject = "La demande de service $categoryName de départ $plcDe->nomFr et L'arrivée $plcAr->nomFr a été rejetée. ";
                 Mail::to($user->email)->send(new RejectionMailAdmin($contentNotification, $subject));
                 break;
         }
+        Notification::create([
+            'user_id' => $user->id,
+            'notificationType' => $notificationType,
+            'deviDemandeCompteId' => $offer->id,
+            'notificationContent'=> $contentNotification,
+        ]);
         
     }
   
@@ -64,16 +90,7 @@ class NotificationHelper
             "$user->firstName $user->lastName  demande en attant de validation",
             $adminAppLink
         ));
-        // $user_id = ;
-        // $notificationType = "nouveauDemande",
-        // $deviDemandeCompte = ;
-        // $contentNotification = ;
-        // Notification::create([
-        //     'user_id' => $user_id,
-        //     'notificationType' => $notificationType,
-        //     'deviDemandeCompteId' => $deviDemandeCompte,
-        //     'notificationContent'=> $contentNotification,
-        // ]);
+
     }
     public static function insertNotification($user_id, $notificationType, $deviDemandeCompte = null)
     {
@@ -133,7 +150,7 @@ class NotificationHelper
 
             case 'compteRejete':
                 $contentNotification = "Votre compte a été rejeté. " . $dateOperation;
-                $subject = "Compte rejeté.";
+                $subject = "Votre compte a été rejeté.";
                 break;
 
             case 'devisAccepteParClient':

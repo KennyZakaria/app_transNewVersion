@@ -89,6 +89,7 @@ Route::prefix('/transporteur')->middleware(['auth:api','role:ROLE_TRANSPORTEUR']
 
     //offre
     Route::get('offres', [OfferTransporteurController::class, 'index']);
+    Route::get('isAprouved', [OfferTransporteurController::class, 'checkIfAprouved']);
     Route::get('offres/{id}', [OfferTransporteurController::class, 'show']);
     //devi
     Route::get('devisByStatus/{status}', [DeviController::class, 'getDevi']);

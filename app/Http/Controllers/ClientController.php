@@ -33,7 +33,7 @@ class ClientController extends Controller
             $status = $request->input('status') == 'false' ?  false:  true;
              $query->where('desactiver', $status);
         }
-
+        $query->orderBy('created_at', 'desc');
         $clients = $query->paginate(10);
 
         $notifications = Notification::getUnreadCompteCreeNotifications();  
@@ -47,9 +47,9 @@ class ClientController extends Controller
             $client->desactiver = !$client->desactiver;
             $client->save();
             if($client->desactiver){
-                NotificationHelper::insertNotification($id,"compteApprouve",$id);
-            }else{
                 NotificationHelper::insertNotification($id,"compteRejete",$id);
+            }else{
+                NotificationHelper::insertNotification($id,"compteApprouve",$id);
             }
 
 

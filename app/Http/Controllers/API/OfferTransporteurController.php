@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Transporteur;
 use App\Models\Offre;
 use App\Models\Devi;
 use App\Models\Place;
@@ -11,8 +12,18 @@ use App\Helpers\OfferHelper;
 use App\Http\Controllers\API\BaseController as BaseController;
 class OfferTransporteurController extends BaseController
 {
+
+    public function checkIfAprouved(Request $request){
+        $user = $request->user();
+        $transporteur = Transporteur::where('user_id', $user->id)->first();
+        $isApprouved =  $transporteur->approuver;
+        return response()->json(['isApprouved'=>$isApprouved]);
+    }
     public function index(Request $request)
     {
+        
+ 
+
         $query = Offre::with(['categorie', 'photos', 'placeDepart', 'placeArrivee', 'articles.dimension', 'chargement','devis.acceptAction','devis.transporteur']);
 
         $query->where('status', 'valide');
@@ -42,7 +53,10 @@ class OfferTransporteurController extends BaseController
         }
     
         $transporteurId = auth()->user()->id;
-        $perPage = $request->input('per_page', 10);
+        $perPage = $request->input('per_page', 20);
+
+        $query->orderBy('created_at', 'desc');
+       
         $offres = $query->paginate($perPage);
         $offresArray = $offres->toArray();
         OfferHelper::modifyKeysInOffersAndExist($offresArray,$transporteurId);

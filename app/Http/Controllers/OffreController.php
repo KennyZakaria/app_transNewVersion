@@ -112,7 +112,7 @@ class OffreController extends Controller
         }
 
         $query->withCount('devis');
-
+        $query->orderBy('created_at', 'desc');
         $offres = $query->paginate(10);
         $offresArray = $offres->toArray();
 
